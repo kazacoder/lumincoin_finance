@@ -1,0 +1,65 @@
+@font-face {
+  font-family: "Roboto";
+  src: url("../static/fonts/Roboto-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "RobotoMedium";
+  src: url("../static/fonts/Roboto-Medium.ttf") format("truetype");
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+.auth-form.form {
+  .login-icon {
+    background: #E9ECEF;
+    height: 38px;
+    width: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #CED4DA;
+    border-radius: 4px 0px 0px 4px;
+  }
+  .mb-10 {
+    margin-bottom: 10px;
+  }
+}
+
+.auth-form {
+  .checkbox {
+    position: absolute;
+    top: 4px;
+  }
+  .auth-form__title {
+    color: #052C65;
+    font-family: "RobotoMedium", sans-serif;
+  }
+}
+
+.auth-form.container {
+  max-width: 397px;
+}
+
+
+.f-size-12 {
+  font-size: 12px;
+}
+
+.l-height-23 {
+  line-height: 23px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.mb-60 {
+  margin-bottom: 60px;
+}
+
+.f-weight-500 {
+  font-family: "RobotoMedium", sans-serif;
+}
