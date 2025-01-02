@@ -27,12 +27,12 @@
 <!--        <hr class="w-100">-->
         <ul class="nav nav-pills flex-column mb-auto px-20 pt-60 menu">
             <li class="nav-item">
-                <a href="/" class="nav-link py-2_5 active" aria-current="page"><i class="bi bi-house"></i>
+                <a href="/" class="nav-link py-2_5" aria-current="page"><i class="bi bi-house"></i>
                     <span class="pl-10">Главная</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link pe-0 py-2_5">
+                <a href="income.html" class="nav-link pe-0 py-2_5">
                     <i class="bi bi-cash-coin"></i>
                     <span class="pl-10">Доходы & Расходы</span>
                 </a>
@@ -46,7 +46,7 @@
                     <div class="collapse show" id="home-collapse">
                         <ul class="nav nav-pills flex-column mb-auto">
                             <li>
-                                <a href="income.html" class="nav-link rounded-0 py-2_5">
+                                <a href="#" class="nav-link rounded-0 py-2_5 active">
                                     Доходы
                                 </a>
                             </li>
@@ -90,9 +90,6 @@
             </div>
         </div>
     </div>
-
-
-
 </div>
 </div>
 </aside>
@@ -101,42 +98,79 @@
     <button class="btn float-end d-md-none sidebar-open" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" role="button">
         <i class="bi bi-list fs-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"></i>
     </button>
-    <div class="container container-fluid align-items-center">
-        <div class="main-content__title">Главная</div>
-        <div class="d-flex period-selection f-weight-500 flex-wrap">
-            <button class="btn btn-secondary w-100-px">Сегодня</button>
-            <button class="btn btn-outline-secondary w-100-px">Неделя</button>
-            <button class="btn btn-outline-secondary w-100-px">Месяц</button>
-            <button class="btn btn-outline-secondary w-100-px">Год</button>
-            <button class="btn btn-outline-secondary w-100-px">Все</button>
-            <button class="btn btn-outline-secondary w-100-px">Интервал</button>
-            <div class="d-flex interval align-items-center">
-                с <span><a href="#" class="link-secondary">Дата</a></span>
-                по <span><a href="#" class="link-secondary">Дата</a></span>
+    <div class="container  align-items-center">
+        <div class="main-content__title">Доходы</div>
+        <div class=" card-group d-flex flex-wrap p-0">
+            <div class="card card-category border rounded-3 me-3 mb-3">
+                <div class="card-body p-20">
+                    <div class="card-title h3 f-weight-500">Депозиты</div>
+                    <div class="f-weight-500">
+                        <button class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</button>
+                        <button class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Удалить</button>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="d-flex flex-wrap justify-content-around charts">
-            <div class="chart-container">
-                <div class="chart-title">Доходы</div>
-                <canvas id="myChart"></canvas>
+
+            <div class="card card-category border rounded-3 me-3 mb-3">
+                <div class="card-body p-20">
+                    <div class="card-title h3 f-weight-500">Зарплата</div>
+                    <div class="f-weight-500">
+                        <button class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</button>
+                        <button class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Удалить</button>
+                    </div>
+                </div>
             </div>
-            <div class=""></div>
-            <div class="chart-container">
-                <div class="chart-title">Расходы</div>
-                <canvas id="myChart1"></canvas>
+
+            <div class="card card-category border rounded-3 me-3 mb-3">
+                <div class="card-body p-20">
+                    <div class="card-title h3 f-weight-500">Сбережения</div>
+                    <div class="f-weight-500">
+                        <button class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</button>
+                        <button class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Удалить</button>
+                    </div>
+                </div>
             </div>
+
+            <div class="card card-category border rounded-3 me-3 mb-3">
+                <div class="card-body p-20">
+                    <div class="card-title h3 f-weight-500">Инвестиции</div>
+                    <div class="f-weight-500">
+                        <button class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</button>
+                        <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</button>
+                    </div>
+                </div>
+            </div>
+
+            <a href="/" class="card card-category border rounded-3 me-3 mb-3 text-decoration-none add-category">
+                <div class="card-body p-20 d-flex align-items-center justify-content-center">
+                    <div class="card-title h3 m-0 f-weight-500 text-center text-secondary">+</div>
+                </div>
+            </a>
         </div>
     </div>
-
 </section>
 
 
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content py-40 text-center rounded-4 ">
+            <div class="modal-body f-weight-500 h5 color-violet p-0 mb-20">
+                Вы действительно хотите удалить категорию? Связанные доходы будут удалены навсегда.
+            </div>
+            <div class="px-3 ">
+                <button type="button" class="btn btn-success f-size-14 f-weight-500 mx-2">Да, удалить</button>
+                <button type="button" class="btn btn-danger f-size-14 f-weight-500" data-bs-dismiss="modal">Не удалять</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script src="../../lib/bootstrap/bootstrap.bundle.min.js"></script>
-<!--<script src="../../lib/chart/helpers/helpers.js"></script>-->
-<!--<script src="../../lib/chart/dist/chart.umd.js"></script>-->
-<script src="../../lib/chart/chart.umd.js"></script>
-<!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+<script src="../../lib/bootstrap/bootstrap.min.js"></script>
+<script src="../../lib/chart/dist/chart.umd.js"></script>
 <script src="../sidebar.js"></script>
-<script src="../components/main-page.js" type="module"></script>
+<script src="../components/income.js" type="module"></script>
 </body>
 </html>

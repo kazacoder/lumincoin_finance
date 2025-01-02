@@ -51,12 +51,24 @@ body {
   font-size: 12px;
 }
 
+.f-size-14{
+  font-size: 14px;
+}
+
 .l-height-23 {
   line-height: 23px;
 }
 
+.l-height-24 {
+  line-height: 24px;
+}
+
 .mb-20 {
   margin-bottom: 20px;
+}
+
+.ml-10 {
+  margin-left: 10px;
 }
 
 .mb-60 {
@@ -79,6 +91,15 @@ body {
 
 .pt-40 {
   padding-top: 40px;
+}
+
+.py-40 {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.p-20 {
+  padding: 20px;
 }
 
 .pb-20 {
@@ -142,4 +163,77 @@ body {
       width: 100px;
     }
   }
+}
+
+.main-content {
+  .container {
+    padding: 90px 60px 20px 60px;
+    margin: 0;
+  }
+  &__title {
+    font-family: 'RobotoMedium', sans-serif;
+    font-size: 40px;
+    color: #052C65;
+    margin-bottom: 55px;
+  }
+}
+
+.period-selection {
+  gap: 20px;
+}
+
+.interval {
+  gap: 20px;
+}
+
+.btn.w-100-px {
+  width: 100px;
+}
+
+
+.charts {
+  margin-top: 120px;
+  margin-left: 60px;
+  .chart-container {
+    max-width: 460px;
+  }
+  .chart-title {
+    font-family: 'RobotoMedium', sans-serif;
+    font-size: 28px;
+    line-height: 33px;
+    color: #290661;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+}
+
+.btn {
+  &.sidebar-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  &.sidebar-open {
+    position: absolute;
+    top: 0;
+    left: 48px;
+  }
+}
+
+.chart-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+
+.card-category {
+  min-width: 352px;
+  max-width: 352px;
+  &.add-category {
+    min-height: 121px;
+  }
+}
+
+.color-violet {
+  color: #290661;
 }
