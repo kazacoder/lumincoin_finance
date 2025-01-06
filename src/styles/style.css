@@ -145,8 +145,8 @@ body {
   width: 100px;
 }
 
-.main-content .container {
-  padding: 90px 60px 20px 60px;
+.main-content .main-container {
+  padding: 90px 55px 20px 60px;
   margin: 0;
 }
 .main-content__title {
@@ -191,8 +191,8 @@ body {
 }
 .btn.sidebar-open {
   position: absolute;
-  top: 0;
-  left: 48px;
+  top: 20px;
+  left: 15px;
 }
 
 .chart-container {
