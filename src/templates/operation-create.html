@@ -36,22 +36,22 @@
                             </a>
                         </li>
                         <li>
-                            <a href="balance.html" class="nav-link pe-0 py-2_5">
+                            <a href="balance.html" class="nav-link pe-0 py-2_5 active">
                                 <i class="bi bi-cash-coin"></i>
                                 <span class="pl-10">Доходы & Расходы</span>
                             </a>
                         </li>
                         <li>
                             <div class="border border-primary rounded-3 category">
-                                <button class="active line-height-regular px-3 py-2_5 nav-link btn btn-toggle d-inline-flex align-items-center justify-content-between flex-row-reverse rounded rounded-bottom-0 border-0 w-100"
+                                <button class="line-height-regular px-3 py-2_5 nav-link btn btn-toggle d-inline-flex align-items-center justify-content-between flex-row-reverse rounded rounded-bottom-0 border-0 w-100"
                                         data-bs-toggle="collapse" data-bs-target="#category-collapse"
-                                        aria-expanded="true">
+                                        aria-expanded="false">
                                     Категории
                                 </button>
-                                <div class="collapse show" id="category-collapse">
+                                <div class="collapse" id="category-collapse">
                                     <ul class="nav nav-pills flex-column mb-auto">
                                         <li>
-                                            <a href="#" class="nav-link rounded-0 py-2_5 active">
+                                            <a href="categories-income.html" class="nav-link rounded-0 py-2_5">
                                                 Доходы
                                             </a>
                                         </li>
@@ -106,10 +106,26 @@
         <i class="bi bi-list fs-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"></i>
     </button>
     <div class="main-container align-items-center">
-        <div class="main-content__title">Создание категории доходов</div>
+        <div class="main-content__title">Создание дохода/расхода</div>
         <div class="main-content__wrapper-element card-group d-flex flex-wrap p-0">
             <div class="category-add-and-edit border-0">
-                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Название...">
+                <select class="form-select" id="type" required>
+                    <option selected disabled hidden value="">Тип...</option>
+                    <option value="Доход">Доход</option>
+                    <option value="Расход">Расход</option>
+                </select>
+                <select class="form-select" id="category" required>
+                    <option selected disabled hidden value="">Категория...</option>
+                    <option value="1">Депозиты</option>
+                    <option value="2">Зарплата</option>
+                    <option value="2">Сбережения</option>
+                    <option value="2">Инвестиции</option>
+                </select>
+                <input type="number" class="form-control" id="amount" placeholder="Сумма в $...">
+                <input type="text"
+                       onfocus="(this.type='date')"
+                       onblur="(this.type='text')" class="form-control" id="date" placeholder="Дата..." required>
+                <input type="text" class="form-control" id="commentary" placeholder="Комментарий...">
                 <div class="actions f-weight-500">
                     <button class="btn btn-success f-size-14 l-height-24 px-3">Создать</button>
                     <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Отмена</button>

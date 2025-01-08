@@ -160,6 +160,9 @@ body {
 .main-content__wrapper-element {
   margin-top: 40px;
 }
+.main-content .balance-actions {
+  margin-top: 40px;
+}
 
 .period-selection {
   gap: 20px;
@@ -228,7 +231,37 @@ body {
   max-width: 397px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
+}
+.category-add-and-edit .actions {
+  margin-top: 10px;
+}
+.category-add-and-edit select:invalid {
+  color: #595c5f;
+}
+.category-add-and-edit option {
+  color: black;
+}
+.category-add-and-edit input[type=date]:invalid {
+  color: #595c5f;
+}
+
+.balance-table__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.balance-table {
+  margin-top: 20px;
+  padding-left: 55px;
+  margin-right: 20px;
+}
+.balance-table th {
+  color: #052C65;
+}
+
+.category:not(.active) {
+  border: none !important;
 }
 
 /*# sourceMappingURL=style.css.map */
