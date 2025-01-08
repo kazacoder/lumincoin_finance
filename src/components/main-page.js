@@ -42,13 +42,14 @@ const data2 = {
             data: numbers(NUMBER_CFG),
             backgroundColor: Object.values(CHART_COLORS),
         }
-    ]
+    ],
 };
 
 const config = {
     type: 'pie',
     data: data,
     options: {
+        radius: '90%',
         responsive: true,
         plugins: {
             legend: {
@@ -66,6 +67,7 @@ const config2 = {
     type: 'pie',
     data: data2,
     options: {
+        radius: '90%',
         responsive: true,
         plugins: {
             legend: {
