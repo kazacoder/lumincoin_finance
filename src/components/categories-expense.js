@@ -1,5 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const createCategoryElement = document.getElementById("create-category");
+const editButtonsElementArray = [...document.getElementsByClassName("edit-button")];
+
 
 if (urlParams.has('catName')) {
     const newCatElement = document.createElement('div');
@@ -8,7 +10,7 @@ if (urlParams.has('catName')) {
                 <div class="card-body p-20">
                     <div class="card-title h3 f-weight-500">${urlParams.get('catName')}</div>
                     <div class="actions f-weight-500">
-                        <button class="btn btn-primary f-size-14 l-height-24 px-3 edit-button">Редактировать</button>
+                        <button class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</button>
                         <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3 remove-button"
                                 data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить
                         </button>
@@ -26,11 +28,10 @@ if (urlParams.has('catName')) {
     })
 }
 
-const editButtonsElementArray = [...document.getElementsByClassName("edit-button")];
 editButtonsElementArray.forEach((btn) => {
     btn.addEventListener("click", () => {
         const catName = btn.parentElement.previousElementSibling.innerText;
-        location.href = `../templates/income-edit.html?category=${catName}`;
+        location.href = `../templates/expense-edit.html?category=${catName}`;
     })
 })
 
