@@ -18,7 +18,7 @@
             <div class="card-body login-card-body">
                 <h1 class="auth-form__title text-center mb-20">Создайте аккаунт</h1>
                 <div id="common-error" class="error invalid-feedback text-center mb-3">Ошибка авторизации</div>
-                <form class="auth-form form">
+                <form class="auth-form form" action="index.html">
                     <div>
                         <div class="input-group mb-10">
                             <div class="login-icon" id="name-div">
@@ -28,7 +28,7 @@
                                           fill="#6C757D"/>
                                 </svg>
                             </div>
-                            <input type="text" class="form-control" placeholder="ФИО" id="name">
+                            <input type="text" class="form-control" placeholder="ФИО" id="name" required>
                         </div>
                         <span id="name-div-error" class="error invalid-feedback">Введите корректный E-mail</span>
                     </div>
@@ -42,7 +42,7 @@
                                           fill="#6C757D"/>
                                 </svg>
                             </div>
-                            <input type="email" class="form-control" placeholder="Электронная почта" id="email">
+                            <input type="email" class="form-control" placeholder="Электронная почта" id="email" required>
                         </div>
                         <span id="email-div-error" class="error invalid-feedback">Введите корректный E-mail</span>
                     </div>
@@ -56,7 +56,7 @@
                                           fill="#6C757D"/>
                                 </svg>
                             </div>
-                            <input type="password" class="form-control" placeholder="Пароль" id="password">
+                            <input type="password" class="form-control" placeholder="Пароль" id="password" required>
                         </div>
                         <span id="password-div-error" class="error invalid-feedback">Введите пароль</span>
                     </div>
@@ -71,12 +71,12 @@
                                 </svg>
                             </div>
                             <input type="password" class="form-control" placeholder="Подтверждение пароля"
-                                   id="password-confirm">
+                                   id="password-confirm" required>
                         </div>
                         <span id="password-confirm-div-error" class="error invalid-feedback">Введите пароль</span>
                     </div>
 
-                    <button type="button" class="btn btn-primary btn-block w-100 mb-10 f-weight-500" id="process-button">
+                    <button type="submit" class="btn btn-primary btn-block w-100 mb-10 f-weight-500" id="process-button">
                         Войти
                     </button>
                 </form>

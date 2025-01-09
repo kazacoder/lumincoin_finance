@@ -21,7 +21,7 @@ body {
     justify-content: center;
     align-items: center;
     border: 1px solid #CED4DA;
-    border-radius: 4px 0px 0px 4px;
+    border-radius: 4px 0 0 4px;
   }
 
   .mb-10 {
@@ -37,7 +37,6 @@ body {
 
   .auth-form__title {
     color: #052C65;
-    color: rgb(255, 255, 255);
     font-family: "RobotoMedium", sans-serif;
   }
 }
@@ -124,7 +123,7 @@ body {
   }
 }
 
-.btn-toggle.active::before {
+.btn-toggle.active::before, .btn-toggle:hover::before {
   content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%28255,255,255,15%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
 }
 
@@ -291,4 +290,14 @@ body {
 
 .category:not(.active) {
   border: none!important;
+}
+
+.category:hover:not(.active) {
+  border: 1px solid #0d6efd!important;
+  margin: -1px;
+}
+
+.nav-link:hover, .menu > li > .nav-link:hover:not(.active), .menu button:hover:not(.active)  {
+  background-color: #0d6efd;
+  color: white!important;
 }

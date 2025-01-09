@@ -24,7 +24,7 @@
                                 data-bs-target="#offcanvas" role="button">
                             <i class="bi bi-x fs-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"></i>
                         </button>
-                        <a href="/"
+                        <a href="#"
                            class="mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
                             <img src="../static/images/logo.png" alt="logo">
                         </a>
@@ -90,7 +90,7 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item color-blue" href="#">Выйти</a></li>
+                                <li><a class="dropdown-item color-blue" href="login.html">Выйти</a></li>
                             </ul>
                         </div>
                     </div>
@@ -108,29 +108,31 @@
     <div class="main-container align-items-center">
         <div class="main-content__title">Создание дохода/расхода</div>
         <div class="main-content__wrapper-element card-group d-flex flex-wrap p-0">
-            <div class="category-add-and-edit border-0">
-                <select class="form-select" id="type" required>
-                    <option selected disabled hidden value="">Тип...</option>
-                    <option value="Доход">Доход</option>
-                    <option value="Расход">Расход</option>
-                </select>
-                <select class="form-select" id="category" required>
-                    <option selected disabled hidden value="">Категория...</option>
-                    <option value="1">Депозиты</option>
-                    <option value="2">Зарплата</option>
-                    <option value="2">Сбережения</option>
-                    <option value="2">Инвестиции</option>
-                </select>
-                <input type="number" class="form-control" id="amount" placeholder="Сумма в $...">
-                <input type="text"
-                       onfocus="(this.type='date')"
-                       onblur="(this.type='text')" class="form-control" id="date" placeholder="Дата..." required>
-                <input type="text" class="form-control" id="commentary" placeholder="Комментарий...">
-                <div class="actions f-weight-500">
-                    <button class="btn btn-success f-size-14 l-height-24 px-3">Создать</button>
-                    <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Отмена</button>
+            <form action="balance.html">
+                <div class="category-add-and-edit border-0">
+                    <select class="form-select" id="type" required>
+                        <option selected disabled hidden value="">Тип...</option>
+                        <option value="Доход">Доход</option>
+                        <option value="Расход">Расход</option>
+                    </select>
+                    <select class="form-select" id="category" required>
+                        <option selected disabled hidden value="">Категория...</option>
+                        <option value="1">Депозиты</option>
+                        <option value="2">Зарплата</option>
+                        <option value="2">Сбережения</option>
+                        <option value="2">Инвестиции</option>
+                    </select>
+                    <input type="number" class="form-control" id="amount" placeholder="Сумма в $..." required>
+                    <input type="text"
+                           onfocus="(this.type='date')"
+                           onblur="(this.type='text')" class="form-control" id="date" placeholder="Дата..." required>
+                    <input type="text" class="form-control" id="commentary" placeholder="Комментарий...">
+                    <div class="actions f-weight-500">
+                        <button class="btn btn-success f-size-14 l-height-24 px-3">Создать</button>
+                        <a href="balance.html" type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Отмена</a>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </section>
@@ -138,6 +140,6 @@
 
 <script src="../../lib/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="../sidebar.js"></script>
-<script src="../components/income.js" type="module"></script>
+<script src="../components/operation-create.js"></script>
 </body>
 </html>

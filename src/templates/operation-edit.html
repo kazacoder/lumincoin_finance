@@ -36,22 +36,22 @@
                             </a>
                         </li>
                         <li>
-                            <a href="balance.html" class="nav-link pe-0 py-2_5">
+                            <a href="balance.html" class="nav-link pe-0 py-2_5 active">
                                 <i class="bi bi-cash-coin"></i>
                                 <span class="pl-10">Доходы & Расходы</span>
                             </a>
                         </li>
                         <li>
-                            <div class="border border-primary rounded-3 category active">
-                                <button class="active line-height-regular px-3 py-2_5 nav-link btn btn-toggle d-inline-flex align-items-center justify-content-between flex-row-reverse rounded rounded-bottom-0 border-0 w-100"
+                            <div class="border border-primary rounded-3 category">
+                                <button class="line-height-regular px-3 py-2_5 nav-link btn btn-toggle d-inline-flex align-items-center justify-content-between flex-row-reverse rounded rounded-bottom-0 border-0 w-100"
                                         data-bs-toggle="collapse" data-bs-target="#category-collapse"
-                                        aria-expanded="true">
+                                        aria-expanded="false">
                                     Категории
                                 </button>
-                                <div class="collapse show" id="category-collapse">
+                                <div class="collapse" id="category-collapse">
                                     <ul class="nav nav-pills flex-column mb-auto">
                                         <li>
-                                            <a href="#" class="nav-link rounded-0 py-2_5 active">
+                                            <a href="categories-income.html" class="nav-link rounded-0 py-2_5">
                                                 Доходы
                                             </a>
                                         </li>
@@ -106,87 +106,41 @@
         <i class="bi bi-list fs-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"></i>
     </button>
     <div class="main-container align-items-center">
-        <div class="main-content__title">Доходы</div>
-        <div class="main-content__wrapper-list  card-group d-flex flex-wrap p-0">
-            <div class="card card-category border rounded-3 me-3 mb-3">
-                <div class="card-body p-20">
-                    <div class="card-title h3 f-weight-500">Депозиты</div>
+        <div class="main-content__title">Редактирование дохода/расхода</div>
+        <div class="main-content__wrapper-element card-group d-flex flex-wrap p-0">
+            <form action="balance.html">
+                <div class="category-add-and-edit border-0">
+                    <select class="form-select" id="type" required>
+                        <option selected disabled hidden value="">Тип...</option>
+                        <option value="Доход">Доход</option>
+                        <option value="Расход">Расход</option>
+                    </select>
+                    <select class="form-select" id="category" required>
+                        <option selected disabled hidden value="">Категория...</option>
+                        <option value="депозиты">Депозиты</option>
+                        <option value="зарплата">Зарплата</option>
+                        <option value="сбережения">Сбережения</option>
+                        <option value="инвестиции">Инвестиции</option>
+                        <option value="жильё">Жильё</option>
+                    </select>
+                    <input type="number" class="form-control" id="amount" placeholder="Сумма в $..." required>
+                    <input type="text"
+                           onfocus="(this.type='date')"
+                           onblur="(this.type='text')" class="form-control" id="date" placeholder="Дата..." required>
+                    <input type="text" class="form-control" id="commentary" placeholder="Комментарий...">
                     <div class="actions f-weight-500">
-                        <a href="income-edit.html?category=Депозиты" class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</a>
-                        <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3"
-                                data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить
-                        </button>
+                        <button class="btn btn-success f-size-14 l-height-24 px-3">Сохранить</button>
+                        <a href="balance.html" type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Отмена</a>
                     </div>
                 </div>
-            </div>
-
-            <div class="card card-category border rounded-3 me-3 mb-3">
-                <div class="card-body p-20">
-                    <div class="card-title h3 f-weight-500">Зарплата</div>
-                    <div class="actions f-weight-500">
-                        <a href="income-edit.html?category=Зарплата" class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</a>
-                        <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3"
-                                data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card card-category border rounded-3 me-3 mb-3">
-                <div class="card-body p-20">
-                    <div class="card-title h3 f-weight-500">Сбережения</div>
-                    <div class="actions f-weight-500">
-                        <button class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</button>
-                        <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3"
-                                data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card card-category border rounded-3 me-3 mb-3">
-                <div class="card-body p-20">
-                    <div class="card-title h3 f-weight-500">Инвестиции</div>
-                    <div class="actions f-weight-500">
-                        <button class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</button>
-                        <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3"
-                                data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <a href="income-create.html"
-               class="card card-category border rounded-3 me-3 mb-3 text-decoration-none add-category">
-                <div class="card-body p-20 d-flex align-items-center justify-content-center">
-                    <div class="card-title h3 m-0 f-weight-500 text-center text-secondary">+</div>
-                </div>
-            </a>
+            </form>
         </div>
     </div>
 </section>
 
 
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content py-40 text-center rounded-4 ">
-            <div class="modal-body f-weight-500 h5 color-violet p-0 mb-20">
-                Вы действительно хотите удалить категорию? Связанные доходы будут удалены навсегда.
-            </div>
-            <div class="px-3 ">
-                <button type="button" class="btn btn-success f-size-14 f-weight-500 mx-2">Да, удалить</button>
-                <button type="button" class="btn btn-danger f-size-14 f-weight-500" data-bs-dismiss="modal">Не удалять
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <script src="../../lib/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="../sidebar.js"></script>
-<script src="../components/income.js" type="module"></script>
+<script src="../components/operation-edit.js"></script>
 </body>
 </html>

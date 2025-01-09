@@ -13,12 +13,12 @@
     <div class="d-flex align-items-center min-vh-100 justify-content-center">
         <div class="auth-form container">
             <div class="login-logo text-center mb-60">
-                <a href="javascript:void(0);"><img src="../static/images/logo.png"></a>
+                <a href="javascript:void(0);"><img src="../static/images/logo.png" alt="logo"></a>
             </div>
             <div class="card-body login-card-body">
                 <h1 class="auth-form__title text-center mb-20">Вход</h1>
                 <div id="common-error" class="error invalid-feedback text-center mb-3">Ошибка авторизации</div>
-                <form class="auth-form form">
+                <form class="auth-form form" action="index.html">
                     <div>
                         <div class="input-group mb-10">
                             <div class="login-icon" id="email-div">
@@ -43,7 +43,7 @@
                                           fill="#6C757D"/>
                                 </svg>
                             </div>
-                            <input type="password" class="form-control" placeholder="Пароль" id="password">
+                            <input type="password" class="form-control" placeholder="Пароль" id="password" required>
                         </div>
                         <span id="password-div-error" class="error invalid-feedback">Введите пароль</span>
                     </div>
@@ -54,7 +54,7 @@
                             Запомнить меня
                         </label>
                     </div>
-                    <button type="button" class="btn btn-primary btn-block w-100 mb-10 f-weight-500" id="process-button">
+                    <button type="submit" class="btn btn-primary btn-block w-100 mb-10 f-weight-500" id="process-button">
                         Войти
                     </button>
                 </form>
