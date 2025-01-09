@@ -42,7 +42,7 @@
                             </a>
                         </li>
                         <li>
-                            <div class="border border-primary rounded-3 category">
+                            <div class="border border-primary rounded-3 category active">
                                 <button class="active line-height-regular px-3 py-2_5 nav-link btn btn-toggle d-inline-flex align-items-center justify-content-between flex-row-reverse rounded rounded-bottom-0 border-0 w-100"
                                         data-bs-toggle="collapse" data-bs-target="#category-collapse"
                                         aria-expanded="true">
@@ -51,7 +51,7 @@
                                 <div class="collapse show" id="category-collapse">
                                     <ul class="nav nav-pills flex-column mb-auto">
                                         <li>
-                                            <a href="#" class="nav-link rounded-0 py-2_5 active">
+                                            <a href="categories-income.html" class="nav-link rounded-0 py-2_5 active">
                                                 Доходы
                                             </a>
                                         </li>
@@ -109,10 +109,11 @@
         <div class="main-content__title">Создание категории доходов</div>
         <div class="main-content__wrapper-element card-group d-flex flex-wrap p-0">
             <div class="category-add-and-edit border-0">
-                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Название...">
+                <input type="text" class="form-control" id="category-name" placeholder="Название...">
+                <span id="category-name-error" class="error invalid-feedback">Заполните поле</span>
                 <div class="actions f-weight-500">
-                    <button class="btn btn-success f-size-14 l-height-24 px-3">Создать</button>
-                    <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Отмена</button>
+                    <button class="btn btn-success f-size-14 l-height-24 px-3" id="create">Создать</button>
+                    <a href="categories-income.html" type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Отмена</a>
                 </div>
             </div>
         </div>
@@ -122,6 +123,6 @@
 
 <script src="../../lib/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="../sidebar.js"></script>
-<script src="../components/income.js" type="module"></script>
+<script src="../components/income-create.js" type="module"></script>
 </body>
 </html>
