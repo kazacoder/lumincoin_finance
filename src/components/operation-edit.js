@@ -13,7 +13,6 @@ if (data['type'] === 'расход') {
 }
 
 for (let option of categoryElement) {
-    console.log(option.value)
     if (option.value === data['category']) {
         option.setAttribute('selected', '')
     }
