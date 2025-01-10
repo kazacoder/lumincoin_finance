@@ -80,6 +80,7 @@
 
 @media screen and (max-width: 450px) {
   .category-add-and-edit {
+    min-width: unset;
     max-width: unset;
     width: 100%;
     flex-direction: row;
