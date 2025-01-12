@@ -31,7 +31,8 @@
                     </div>
                     <ul class="nav nav-pills flex-column mb-auto px-20 pt-60 menu">
                         <li class="nav-item">
-                            <a href="../../index.html" class="nav-link py-2_5" aria-current="page"><i class="bi bi-house"></i>
+                            <a href="../../index.html" class="nav-link py-2_5" aria-current="page"><i
+                                    class="bi bi-house"></i>
                                 <span class="pl-10">Главная</span>
                             </a>
                         </li>
@@ -56,7 +57,8 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="categories-expense.html" class="nav-link rounded-0 rounded-bottom py-2_5">
+                                            <a href="categories-expense.html"
+                                               class="nav-link rounded-0 rounded-bottom py-2_5">
                                                 Расходы
                                             </a>
                                         </li>
@@ -112,23 +114,41 @@
                 <div class="category-add-and-edit border-0">
                     <select class="form-select" id="type" required>
                         <option selected disabled hidden value="">Тип...</option>
-                        <option value="Доход">Доход</option>
-                        <option value="Расход">Расход</option>
+                        <option value="доход">Доход</option>
+                        <option value="расход">Расход</option>
                     </select>
-                    <select class="form-select" id="category" required>
-                        <option selected disabled hidden value="">Категория...</option>
-                        <option value="1">Депозиты</option>
-                        <option value="2">Зарплата</option>
-                        <option value="2">Сбережения</option>
-                        <option value="2">Инвестиции</option>
-                    </select>
-                    <input type="number" class="form-control" id="amount" placeholder="Сумма в $..." required>
-                    <input type="text"
-                           onfocus="(this.type='date')"
-                           onblur="(this.type='text')" class="form-control" id="date" placeholder="Дата..." required>
+                    <div class="form-select-wrapper w-100">
+                        <select class="form-select" id="category" required>
+                            <option selected disabled hidden value="">Категория...</option>
+                            <option value="депозиты">Депозиты</option>
+                            <option value="зарплата">Зарплата</option>
+                            <option value="сбережения">Сбережения</option>
+                            <option value="инвестиции">Инвестиции</option>
+                            <option disabled value="">-----------</option>
+                            <option value="еда">Еда</option>
+                            <option value="жильё">Жильё</option>
+                            <option value="здоровье">Здоровье</option>
+                            <option value="кафе">Кафе</option>
+                            <option value="авто">Авто</option>
+                            <option value="одежда">Одежда</option>
+                            <option value="развлечения">Развлечения</option>
+                            <option value="счета">Счета</option>
+                            <option value="спорт">Спорт</option>
+
+                        </select>
+                        <span id="category-error" class="error invalid-feedback">Заполните поле</span>
+                    </div>
+                    <div class="form-input-wrapper w-100">
+                        <input type="number" class="form-control" id="amount" placeholder="Сумма в $...">
+                        <span id="amount-error" class="error invalid-feedback">Введите сумму</span>
+                    </div>
+                    <div class="form-input-wrapper w-100">
+                        <input type="date" class="form-control" id="date" placeholder="Дата..." required>
+                        <span id="date-error" class="error invalid-feedback">Заполните поле</span>
+                    </div>
                     <input type="text" class="form-control" id="commentary" placeholder="Комментарий...">
                     <div class="actions f-weight-500">
-                        <button class="btn btn-success f-size-14 l-height-24 px-3">Создать</button>
+                        <button id="create" class="btn btn-success f-size-14 l-height-24 px-3">Создать</button>
                         <a href="balance.html" type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Отмена</a>
                     </div>
                 </div>
