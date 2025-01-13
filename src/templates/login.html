@@ -30,8 +30,8 @@
                                 </svg>
                             </div>
                             <input type="email" class="form-control" placeholder="Электронная почта" id="email" required>
+                            <span id="email-error" class="error invalid-feedback">Введите корректный E-mail</span>
                         </div>
-                        <span id="email-div-error" class="error invalid-feedback">Введите корректный E-mail</span>
                     </div>
                     <div>
                         <div class="input-group mb-10" id="password-div">
@@ -44,8 +44,8 @@
                                 </svg>
                             </div>
                             <input type="password" class="form-control" placeholder="Пароль" id="password" required>
+                            <span id="password-error" class="error invalid-feedback">Введите пароль</span>
                         </div>
-                        <span id="password-div-error" class="error invalid-feedback">Введите пароль</span>
                     </div>
 
                     <div class="d-flex align-items-center gap-2 mb-20 f-size-12 l-height-23 position-relative">
@@ -54,7 +54,7 @@
                             Запомнить меня
                         </label>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block w-100 mb-10 f-weight-500" id="process-button">
+                    <button type="submit" class="btn btn-primary btn-block w-100 mb-10 f-weight-500" id="login">
                         Войти
                     </button>
                 </form>
@@ -64,6 +64,6 @@
     </div>
 </div>
 
-<!--<script src="../../lib/bootstrap/bootstrap.bundle.min.js"></script>-->
+<script src="../components/login.js"></script>
 </body>
 </html>
