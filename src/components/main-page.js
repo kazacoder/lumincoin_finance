@@ -2,7 +2,8 @@
 //
 // }
 
-// import {Chart} from "../../lib/chart/dist/chart.js/auto";
+// import Chart from "chart.js/auto";
+// window.Chart = Chart;
 
 
 const ctx = document.getElementById('myChart');
