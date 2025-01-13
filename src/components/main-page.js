@@ -2,7 +2,7 @@
 //
 // }
 
-// import Chart from "chart.js/auto";
+// import Chart from "../../node_modules/chart.js/dist/chart";
 // window.Chart = Chart;
 
 

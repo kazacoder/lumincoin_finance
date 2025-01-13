@@ -55,7 +55,7 @@ module.exports = {
                 {from: "./node_modules/chart.js/dist/chart.js", to: "js"},
                 // {from: "./node_modules/chart.js/", to: "lib/chart"},
                 {from: "./node_modules/chart.js/dist/chart.umd.js", to: "js"},
-                {from: "./node_modules/chart.js", to: "js/chart_js"},
+                // {from: "./node_modules/chart.js", to: "js/chart_js"},
                 {from: "./src/components/main-page.js", to: "js"},
             ],
         }),
