@@ -36,7 +36,7 @@ export class CategoriesIncome {
         editButtonsElementArray.forEach((btn) => {
             btn.addEventListener("click", () => {
                 const catName = btn.parentElement.previousElementSibling.innerText;
-                location.href = `../templates/pages/categories/income-edit.html`;
+                this.openNewRoute(`/categories/income-edit?category=${catName}`);
             })
         })
 

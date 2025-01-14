@@ -4,6 +4,7 @@ import {Login} from "./components/login";
 import {SignUp} from "./components/sign-up";
 import {CategoriesExpense} from "./components/categories-expense";
 import {CategoriesIncome} from "./components/categories-income";
+import {IncomeEdit} from "./components/income-edit";
 
 
 export class Router {
@@ -96,6 +97,20 @@ export class Router {
                 scripts: [],
                 unload: () => {
                     document.getElementById('includes').remove()
+                }
+            },
+            '/categories/income-edit': {
+                title: 'Редактирование категории',
+                filePathTemplate: '/templates/pages/categories/income-edit.html',
+                useLayout: '/templates/layout.html',
+                includes: [],
+                load: () => {
+                    new IncomeEdit(this.openNewRoute.bind(this));
+                },
+                styles: [],
+                scripts: [],
+                unload: () => {
+
                 }
             },
         }
