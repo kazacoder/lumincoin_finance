@@ -1,0 +1,82 @@
+<button class="btn float-end d-md-none sidebar-open" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"
+        role="button">
+    <i class="bi bi-list fs-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"></i>
+</button>
+<div class="main-container align-items-center">
+    <div class="main-content__title">Доходы и расходы</div>
+    <div class="balance-actions f-weight-500">
+        <a href="/balance/operation-create?type=income" class="btn btn-success f-size-14 l-height-24 px-3">Создать
+            доход</a>
+        <a href="/balance/operation-create?type=expense" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3">Создать
+            расход</a>
+    </div>
+    <div class="d-flex period-selection f-weight-500 flex-wrap">
+        <button class="btn btn-secondary w-100-px">Сегодня</button>
+        <button class="btn btn-outline-secondary w-100-px">Неделя</button>
+        <button class="btn btn-outline-secondary w-100-px">Месяц</button>
+        <button class="btn btn-outline-secondary w-100-px">Год</button>
+        <button class="btn btn-outline-secondary w-100-px">Все</button>
+        <button class="btn btn-outline-secondary w-100-px">Интервал</button>
+        <div class="d-flex interval align-items-center">
+            с <span><a href="#" class="link-secondary">Дата</a></span>
+            по <span><a href="#" class="link-secondary">Дата</a></span>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="table-responsive balance-table">
+    <table class="table text-center" id="balance-table">
+        <thead class="border-top">
+        <tr>
+            <th scope="col" class="text-">№ операции</th>
+            <th scope="col">Тип</th>
+            <th scope="col">Категория</th>
+            <th scope="col">Сумма</th>
+            <th scope="col">Дата</th>
+            <th scope="col">Комментарий</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody id="records">
+        <tr>
+            <th scope="row" class="row_number">1</th>
+            <td class="text-success">доход</td>
+            <td>зарплата</td>
+            <td>500$</td>
+            <td>08.01.2025</td>
+            <td></td>
+            <td>
+                <div class="balance-table__actions">
+                    <button class="btn m-0 p-0 remove-button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button class="btn m-0 p-0 edit-operation">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row" class="row_number">2</th>
+            <td class="text-danger">расход</td>
+            <td>жильё</td>
+            <td>2 500$</td>
+            <td>09.01.2025</td>
+            <td></td>
+            <td>
+                <div class="balance-table__actions">
+                    <button class="btn m-0 p-0 remove-button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button class="btn m-0 p-0 edit-operation">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+

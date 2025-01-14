@@ -1,0 +1,30 @@
+    <button class="btn float-end d-md-none sidebar-open" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"
+            role="button">
+        <i class="bi bi-list fs-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"></i>
+    </button>
+    <div class="main-container align-items-center">
+        <div class="main-content__title">Главная</div>
+        <div class="d-flex period-selection f-weight-500 flex-wrap">
+            <button class="btn btn-secondary w-100-px">Сегодня</button>
+            <button class="btn btn-outline-secondary w-100-px">Неделя</button>
+            <button class="btn btn-outline-secondary w-100-px">Месяц</button>
+            <button class="btn btn-outline-secondary w-100-px">Год</button>
+            <button class="btn btn-outline-secondary w-100-px">Все</button>
+            <button class="btn btn-outline-secondary w-100-px">Интервал</button>
+            <div class="d-flex interval align-items-center">
+                с <span><a href="#" class="link-secondary">Дата</a></span>
+                по <span><a href="#" class="link-secondary">Дата</a></span>
+            </div>
+        </div>
+        <div class="d-flex flex-wrap justify-content-around charts">
+            <div class="chart-container">
+                <div class="chart-title">Доходы</div>
+                <canvas id="myChart"></canvas>
+            </div>
+            <div class="divider"></div>
+            <div class="chart-container expenses">
+                <div class="chart-title">Расходы</div>
+                <canvas id="myChart1"></canvas>
+            </div>
+        </div>
+    </div>

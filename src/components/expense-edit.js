@@ -12,10 +12,10 @@ saveButtonElement.addEventListener("click", () => {
         return;
     }
     if (categoryNameElement.value !== oldCatName) {
-        location.href = `../templates/categories-expense.html?changed=true&newCatName=${categoryNameElement.value}&oldCatName=${oldCatName}`;
+        location.href = `../templates/pages/categories/categories-expense.html`;
         return;
     }
-    location.href = `../templates/categories-expense.html`;
+    location.href = `../templates/pages/categories/categories-expense.html`;
 })
 
 

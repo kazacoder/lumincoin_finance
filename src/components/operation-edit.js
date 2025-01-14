@@ -52,6 +52,6 @@ saveButton.addEventListener('click', (e) => {
             date: dateInputElement.value,
             commentary: commentaryInputElement.value,
         }
-        location.href = `../templates/balance.html?data=${JSON.stringify(changedData)}`;
+        location.href = `../templates/includes/balance.html`;
     }
 })

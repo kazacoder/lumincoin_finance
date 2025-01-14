@@ -1,12 +1,20 @@
-const urlParams = new URLSearchParams(window.location.search);
-const createCategoryElement = document.getElementById("create-category");
-const editButtonsElementArray = [...document.getElementsByClassName("edit-button")];
+export class CategoriesExpense {
+    constructor(openNewRoute) {
+        this.openNewRoute = openNewRoute;
+        this.loadCategoriesExpense();
+
+    }
+
+    loadCategoriesExpense() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const createCategoryElement = document.getElementById("create-category");
+        const editButtonsElementArray = [...document.getElementsByClassName("edit-button")];
 
 
-if (urlParams.has('catName')) {
-    const newCatElement = document.createElement('div');
-    newCatElement.classList.add('card', 'card-category', 'border', 'rounded-3','me-3','mb-3')
-    newCatElement.innerHTML = `
+        if (urlParams.has('catName')) {
+            const newCatElement = document.createElement('div');
+            newCatElement.classList.add('card', 'card-category', 'border', 'rounded-3', 'me-3', 'mb-3')
+            newCatElement.innerHTML = `
                 <div class="card-body p-20">
                     <div class="card-title h3 f-weight-500">${urlParams.get('catName')}</div>
                     <div class="actions f-weight-500">
@@ -17,35 +25,56 @@ if (urlParams.has('catName')) {
                     </div>
                 </div>
     `;
-    createCategoryElement.parentNode.insertBefore(newCatElement, createCategoryElement);
-} else if (urlParams.has('changed')) {
-    const oldCatName = urlParams.get('oldCatName');
-    const categoriesTitleElementArray = [...document.getElementsByClassName('card-title')];
-    categoriesTitleElementArray.forEach((el) => {
-        if (oldCatName === el.innerText) {
-            el.innerText = urlParams.get('newCatName');
+            createCategoryElement.parentNode.insertBefore(newCatElement, createCategoryElement);
+        } else if (urlParams.has('changed')) {
+            const oldCatName = urlParams.get('oldCatName');
+            const categoriesTitleElementArray = [...document.getElementsByClassName('card-title')];
+            categoriesTitleElementArray.forEach((el) => {
+                if (oldCatName === el.innerText) {
+                    el.innerText = urlParams.get('newCatName');
+                }
+            })
         }
-    })
+
+        editButtonsElementArray.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const catName = btn.parentElement.previousElementSibling.innerText;
+                location.href = `../templates/pages/categories/expense-edit.html`;
+            })
+        })
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
+        const removeButtonsElementArray = [...document.getElementsByClassName("remove-button")];
+
+        removeButtonsElementArray.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const confirmRemoveButton = document.getElementById('confirm-remove')
+                const cloneBtn = confirmRemoveButton.cloneNode(true)
+                confirmRemoveButton.parentNode.replaceChild(cloneBtn, confirmRemoveButton);
+                cloneBtn.addEventListener('click', () => {
+                    modal.hide()
+                    btn.parentElement.parentElement.parentElement.remove();
+                })
+            })
+        })
+    }
 }
 
-editButtonsElementArray.forEach((btn) => {
-    btn.addEventListener("click", () => {
-        const catName = btn.parentElement.previousElementSibling.innerText;
-        location.href = `../templates/expense-edit.html?category=${catName}`;
-    })
-})
 
-const modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
-const removeButtonsElementArray = [...document.getElementsByClassName("remove-button")];
-
-removeButtonsElementArray.forEach((btn) => {
-    btn.addEventListener("click", () => {
-        const confirmRemoveButton = document.getElementById('confirm-remove')
-        const cloneBtn = confirmRemoveButton.cloneNode(true)
-        confirmRemoveButton.parentNode.replaceChild(cloneBtn, confirmRemoveButton);
-        cloneBtn.addEventListener('click', () => {
-            modal.hide()
-            btn.parentElement.parentElement.parentElement.remove();
-        })
-    })
-})
+//
+// <!-- Modal -->
+// <div class="modal fade" id="deleteModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel"
+// aria-hidden="true">
+//     <div class="modal-dialog modal-dialog-centered">
+//     <div class="modal-content py-40 text-center rounded-4 ">
+//     <div class="modal-body f-weight-500 h5 color-violet p-0 mb-20">
+//     Вы действительно хотите удалить категорию? Связанные доходы будут удалены навсегда.
+// </div>
+// <div class="px-3 ">
+//     <button type="button" class="btn btn-success f-size-14 f-weight-500 mx-2" id="confirm-remove">Да, удалить</button>
+//     <button type="button" class="btn btn-danger f-size-14 f-weight-500" data-bs-dismiss="modal">Не удалять
+//     </button>
+// </div>
+// </div>
+// </div>
+// </div>

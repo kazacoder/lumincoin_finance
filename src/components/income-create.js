@@ -8,5 +8,5 @@ createButtonElement.addEventListener("click", (e) => {
         categoryNameElement.classList.add("is-invalid");
         return;
     }
-    location.href = `../templates/categories-income.html?catName=${categoryNameElement.value}`;
+    location.href = `../templates/pages/categories/categories-income.html`;
 })
