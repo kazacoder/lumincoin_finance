@@ -1,5 +1,6 @@
 export class Balance {
-    constructor() {
+    constructor(openNewRoute) {
+        this.openNewRoute = openNewRoute;
         this.loadBalance()
     }
 
@@ -75,7 +76,7 @@ export class Balance {
                     date: currentRow[4].innerText,
                     commentary: currentRow[5].innerText,
                 }
-                location.href = `../templates/pages/balance/operation-edit.html`
+                this.openNewRoute(`/operation/edit?data=${JSON.stringify(data)}`);
             })
         })
 

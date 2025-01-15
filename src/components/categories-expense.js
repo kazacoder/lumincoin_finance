@@ -8,7 +8,7 @@ export class CategoriesExpense {
     loadCategoriesExpense() {
         const urlParams = new URLSearchParams(window.location.search);
         const createCategoryElement = document.getElementById("create-category");
-        const editButtonsElementArray = [...document.getElementsByClassName("edit-button")];
+
 
 
         if (urlParams.has('catName')) {
@@ -18,7 +18,7 @@ export class CategoriesExpense {
                 <div class="card-body p-20">
                     <div class="card-title h3 f-weight-500">${urlParams.get('catName')}</div>
                     <div class="actions f-weight-500">
-                        <button class="btn btn-primary f-size-14 l-height-24 px-3">Редактировать</button>
+                        <button class="btn btn-primary f-size-14 l-height-24 px-3 edit-button">Редактировать</button>
                         <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3 remove-button"
                                 data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить
                         </button>
@@ -36,14 +36,16 @@ export class CategoriesExpense {
             })
         }
 
+        const editButtonsElementArray = [...document.getElementsByClassName("edit-button")];
         editButtonsElementArray.forEach((btn) => {
             btn.addEventListener("click", () => {
                 const catName = btn.parentElement.previousElementSibling.innerText;
-                location.href = `../templates/pages/categories/expense-edit.html`;
+                this.openNewRoute(`/category/expense/edit?category=${catName}`);
             })
         })
 
         const modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
+        document.getElementById('delete-modal-title').innerText = 'Вы действительно хотите удалить категорию? Связанные расходы будут удалены навсегда.'
         const removeButtonsElementArray = [...document.getElementsByClassName("remove-button")];
 
         removeButtonsElementArray.forEach((btn) => {
@@ -59,22 +61,3 @@ export class CategoriesExpense {
         })
     }
 }
-
-
-//
-// <!-- Modal -->
-// <div class="modal fade" id="deleteModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel"
-// aria-hidden="true">
-//     <div class="modal-dialog modal-dialog-centered">
-//     <div class="modal-content py-40 text-center rounded-4 ">
-//     <div class="modal-body f-weight-500 h5 color-violet p-0 mb-20">
-//     Вы действительно хотите удалить категорию? Связанные доходы будут удалены навсегда.
-// </div>
-// <div class="px-3 ">
-//     <button type="button" class="btn btn-success f-size-14 f-weight-500 mx-2" id="confirm-remove">Да, удалить</button>
-//     <button type="button" class="btn btn-danger f-size-14 f-weight-500" data-bs-dismiss="modal">Не удалять
-//     </button>
-// </div>
-// </div>
-// </div>
-// </div>

@@ -6,7 +6,7 @@ export class IncomeEdit {
 
     loadIncomeEdit() {
         const categoryNameElement = document.getElementById("category-name");
-        const saveButtonElement = document.getElementById("save");
+        const saveButtonElement = document.getElementById("proceed");
         const params = new URLSearchParams(location.search)
         const oldCatName = params.get("category");
         categoryNameElement.value = oldCatName
@@ -19,10 +19,10 @@ export class IncomeEdit {
                 return;
             }
             if (categoryNameElement.value !== oldCatName) {
-                this.openNewRoute(`/categories-income?changed=true&newCatName=${categoryNameElement.value}&oldCatName=${oldCatName}`);
+                this.openNewRoute(`/categories/income?changed=true&newCatName=${categoryNameElement.value}&oldCatName=${oldCatName}`);
                 return;
             }
-            this.openNewRoute('/categories-income');
+            this.openNewRoute('/categories/income');
         })
     }
 }

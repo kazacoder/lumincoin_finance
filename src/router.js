@@ -5,12 +5,19 @@ import {SignUp} from "./components/sign-up";
 import {CategoriesExpense} from "./components/categories-expense";
 import {CategoriesIncome} from "./components/categories-income";
 import {IncomeEdit} from "./components/income-edit";
+import {NotFoundError} from "./components/404";
+import {OperationCreate} from "./components/operation-create";
+import {OperationEdit} from "./components/operation-edit";
+import {IncomeCreate, incomeCreate} from "./components/income-create";
+import {ExpenseEdit} from "./components/expense-edit";
+import {ExpenseCreate} from "./components/expense-create";
 
 
 export class Router {
     constructor() {
         this.titlePageElement = document.getElementById('title');
         this.contentPageElement = document.getElementById('content');
+        this.historyBackLink = null;
         this.initEvents();
         this.routes = {
             '/': {
@@ -56,6 +63,9 @@ export class Router {
                 title: '404',
                 filePathTemplate: '/templates/pages/404.html',
                 useLayout: false,
+                load: () => {
+                    new NotFoundError(this.historyBackLink)
+                },
             },
             '/balance': {
                 title: 'Баланс',
@@ -63,7 +73,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
-                    new Balance()
+                    new Balance(this.openNewRoute.bind(this));
                 },
                 styles: [],
                 scripts: [],
@@ -71,7 +81,7 @@ export class Router {
                     document.getElementById('includes').remove()
                 }
             },
-            '/categories-income': {
+            '/categories/income': {
                 title: 'Категории доходов',
                 filePathTemplate: '/templates/pages/categories/categories-income.html',
                 useLayout: '/templates/layout.html',
@@ -85,7 +95,7 @@ export class Router {
                     document.getElementById('includes').remove()
                 }
             },
-            '/categories-expense': {
+            '/categories/expense': {
                 title: 'Категории доходов',
                 filePathTemplate: '/templates/pages/categories/categories-expense.html',
                 useLayout: '/templates/layout.html',
@@ -99,13 +109,83 @@ export class Router {
                     document.getElementById('includes').remove()
                 }
             },
-            '/categories/income-edit': {
+            '/category/income/edit': {
                 title: 'Редактирование категории',
-                filePathTemplate: '/templates/pages/categories/income-edit.html',
+                filePathTemplate: '/templates/pages/categories/category.html',
                 useLayout: '/templates/layout.html',
                 includes: [],
                 load: () => {
                     new IncomeEdit(this.openNewRoute.bind(this));
+                },
+                styles: [],
+                scripts: [],
+                unload: () => {
+
+                }
+            },
+            '/category/income/create': {
+                title: 'Создание категории',
+                filePathTemplate: '/templates/pages/categories/category.html',
+                useLayout: '/templates/layout.html',
+                includes: [],
+                load: () => {
+                    new IncomeCreate(this.openNewRoute.bind(this));
+                },
+                styles: [],
+                scripts: [],
+                unload: () => {
+
+                }
+            },
+            '/category/expense/edit': {
+                title: 'Создание категории',
+                filePathTemplate: '/templates/pages/categories/category.html',
+                useLayout: '/templates/layout.html',
+                includes: [],
+                load: () => {
+                    new ExpenseEdit(this.openNewRoute.bind(this));
+                },
+                styles: [],
+                scripts: [],
+                unload: () => {
+
+                }
+            },
+            '/category/expense/create': {
+                title: 'Редактирование категории',
+                filePathTemplate: '/templates/pages/categories/category.html',
+                useLayout: '/templates/layout.html',
+                includes: [],
+                load: () => {
+                    new ExpenseCreate(this.openNewRoute.bind(this));
+                },
+                styles: [],
+                scripts: [],
+                unload: () => {
+
+                }
+            },
+            '/operation/create': {
+                title: 'Создать операцию',
+                filePathTemplate: '/templates/pages/balance/operation.html',
+                useLayout: '/templates/layout.html',
+                includes: [],
+                load: () => {
+                    new OperationCreate(this.openNewRoute.bind(this));
+                },
+                styles: [],
+                scripts: [],
+                unload: () => {
+
+                }
+            },
+            '/operation/edit': {
+                title: 'Редактировать операцию',
+                filePathTemplate: '/templates/pages/balance/operation.html',
+                useLayout: '/templates/layout.html',
+                includes: [],
+                load: () => {
+                    new OperationEdit(this.openNewRoute.bind(this));
                 },
                 styles: [],
                 scripts: [],
@@ -151,6 +231,7 @@ export class Router {
     async activateRoute(e, oldRoute = null) {
         if (oldRoute) {
             const currentRoute = this.routes[oldRoute];
+            this.historyBackLink = oldRoute
             if (currentRoute.styles && currentRoute.styles.length > 0) {
                 currentRoute.styles.forEach(style => {
                     document.querySelector(`link[href='/css/${style}']`).remove();
