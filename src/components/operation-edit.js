@@ -12,22 +12,24 @@ export class OperationEdit {
         const dateInputElement = document.getElementById('date');
         const commentaryInputElement = document.getElementById('commentary');
 
-
-        if (data['type'] === 'расход') {
-            typeSelectElement.children[2].setAttribute('selected', '')
-        } else if (data['type'] === 'доход') {
-            typeSelectElement.children[1].setAttribute('selected', '')
-        }
-
-        for (let option of categorySelectElement) {
-            if (option.value === data['category']) {
-                option.setAttribute('selected', '')
+        if (data) {
+            if (data['type'] === 'расход') {
+                typeSelectElement.children[2].setAttribute('selected', '')
+            } else if (data['type'] === 'доход') {
+                typeSelectElement.children[1].setAttribute('selected', '')
             }
+
+            for (let option of categorySelectElement) {
+                if (option.value === data['category']) {
+                    option.setAttribute('selected', '')
+                }
+            }
+            amountInputElement.value = data['amount'];
+            dateInputElement.value = new Date(data['date'].split('.').reverse().join('-')).toISOString().slice(0, 10);
+            commentaryInputElement.value = data['commentary'];
         }
 
-        amountInputElement.value = data['amount'];
-        dateInputElement.value = new Date(data['date'].split('.').reverse().join('-')).toISOString().slice(0, 10);
-        commentaryInputElement.value = data['commentary'];
+
 
         document.querySelector('.main-content__title').innerText = 'Редактирование дохода/расхода';
 
@@ -67,7 +69,7 @@ export class OperationEdit {
             if (!hasError) {
                 console.log('valid')
                 const changedData = {
-                    id: data.id,
+                    id: (data ? data.id : null),
                     type: typeSelectElement.value,
                     category: categorySelectElement.value,
                     amount: amountInputElement.value,

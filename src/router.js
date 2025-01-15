@@ -8,7 +8,7 @@ import {IncomeEdit} from "./components/income-edit";
 import {NotFoundError} from "./components/404";
 import {OperationCreate} from "./components/operation-create";
 import {OperationEdit} from "./components/operation-edit";
-import {IncomeCreate, incomeCreate} from "./components/income-create";
+import {IncomeCreate} from "./components/income-create";
 import {ExpenseEdit} from "./components/expense-edit";
 import {ExpenseCreate} from "./components/expense-create";
 
@@ -96,7 +96,7 @@ export class Router {
                 }
             },
             '/categories/expense': {
-                title: 'Категории доходов',
+                title: 'Категории расходов',
                 filePathTemplate: '/templates/pages/categories/categories-expense.html',
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
@@ -109,7 +109,7 @@ export class Router {
                     document.getElementById('includes').remove()
                 }
             },
-            '/category/income/edit': {
+            '/categories/income/edit': {
                 title: 'Редактирование категории',
                 filePathTemplate: '/templates/pages/categories/category.html',
                 useLayout: '/templates/layout.html',
@@ -123,7 +123,7 @@ export class Router {
 
                 }
             },
-            '/category/income/create': {
+            '/categories/income/create': {
                 title: 'Создание категории',
                 filePathTemplate: '/templates/pages/categories/category.html',
                 useLayout: '/templates/layout.html',
@@ -137,8 +137,8 @@ export class Router {
 
                 }
             },
-            '/category/expense/edit': {
-                title: 'Создание категории',
+            '/categories/expense/edit': {
+                title: 'Редактирование категории',
                 filePathTemplate: '/templates/pages/categories/category.html',
                 useLayout: '/templates/layout.html',
                 includes: [],
@@ -151,8 +151,8 @@ export class Router {
 
                 }
             },
-            '/category/expense/create': {
-                title: 'Редактирование категории',
+            '/categories/expense/create': {
+                title: 'Создание категории',
                 filePathTemplate: '/templates/pages/categories/category.html',
                 useLayout: '/templates/layout.html',
                 includes: [],
@@ -215,6 +215,8 @@ export class Router {
             element = e.target;
         } else if (e.target.parentNode.nodeName === 'A') {
             element = e.target.parentNode;
+        } else if (e.target.parentNode.parentNode.nodeName === 'A') {
+            element = e.target.parentNode.parentNode;
         }
         if (element) {
             e.preventDefault()
@@ -270,6 +272,7 @@ export class Router {
                 if (newRoute.useLayout) {
                     contentBlock.innerHTML = await fetch(newRoute.useLayout).then(res => res.text());
                     contentBlock = document.getElementById('content-layout')
+                    this.activateMenuItem(window.location.pathname)
                 }
                 contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(res => res.text());
             }
@@ -312,5 +315,31 @@ export class Router {
         const srcNewDiv = document.createElement('div');
         srcNewDiv.innerHTML = srcHtml;
         includesDiv.appendChild(srcNewDiv)
+    }
+
+    activateMenuItem(route) {
+        const menuItem = document.querySelectorAll('.sidebar .nav-link');
+        menuItem.forEach(item => {
+            const href = item.getAttribute('href');
+            if (route.includes(href) && '/' !== href || (route === '/' && href === '/')) {
+                item.classList.add('active');
+            } else item.classList.remove('active')
+
+        })
+
+        const categoryButton = document.getElementById('categories');
+        const categoryListElement = document.getElementById('category-collapse');
+        if (route.includes('categories')) {
+            categoryButton.classList.add('active');
+            categoryButton.classList.remove('collapsed');
+            categoryButton.parentElement.classList.add('active');
+            categoryButton.setAttribute('aria-expanded', 'true');
+            categoryListElement.classList.add('show');
+        } else {
+            categoryButton.classList.add('collapsed');
+            categoryButton.parentElement.classList.remove('active');
+            categoryButton.setAttribute('aria-expanded', 'false');
+            categoryListElement.classList.remove('show');
+        }
     }
 }

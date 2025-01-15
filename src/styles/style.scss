@@ -176,6 +176,9 @@ body {
       width: 100px;
     }
   }
+  .category-wrapper.active {
+    margin: -1px;
+  }
 }
 
 .btn {

@@ -40,7 +40,7 @@ export class CategoriesExpense {
         editButtonsElementArray.forEach((btn) => {
             btn.addEventListener("click", () => {
                 const catName = btn.parentElement.previousElementSibling.innerText;
-                this.openNewRoute(`/category/expense/edit?category=${catName}`);
+                this.openNewRoute(`/categories/expense/edit?category=${catName}`);
             })
         })
 
