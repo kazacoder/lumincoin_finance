@@ -1,6 +1,7 @@
 const CopyPlugin = require("copy-webpack-plugin");
 const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = {
     entry: './src/app.js',
@@ -59,5 +60,6 @@ module.exports = {
                 {from: "./src/components/balance.js", to: "js"},
             ],
         }),
+        new Dotenv(),
     ],
 };

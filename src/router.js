@@ -1,6 +1,6 @@
 import {MainPage} from "./components/main-page";
 import {Balance} from "./components/balance";
-import {Login} from "./components/login";
+import {Login} from "./components/auth/login";
 import {SignUp} from "./components/sign-up";
 import {CategoriesExpense} from "./components/categories-expense";
 import {CategoriesIncome} from "./components/categories-income";
@@ -11,6 +11,8 @@ import {OperationEdit} from "./components/operation-edit";
 import {IncomeCreate} from "./components/income-create";
 import {ExpenseEdit} from "./components/expense-edit";
 import {ExpenseCreate} from "./components/expense-create";
+import {Logout} from "./components/auth/logout";
+import {AuthUtils} from "./utils/auth-utils";
 
 
 export class Router {
@@ -18,7 +20,9 @@ export class Router {
         this.titlePageElement = document.getElementById('title');
         this.contentPageElement = document.getElementById('content');
         this.historyBackLink = null;
-        this.initEvents();
+        this.userName = null
+        console.log(window.location.pathname)
+
         this.routes = {
             '/': {
                 title: 'Главная',
@@ -44,6 +48,15 @@ export class Router {
                 scripts: [],
                 unload: () => {
 
+                }
+            },
+            '/logout': {
+                useLayout: null,
+                load: () => {
+                    new Logout(this.openNewRoute.bind(this));
+                },
+                unload: () => {
+                    this.userName = null
                 }
             },
             '/sign-up': {
@@ -194,6 +207,12 @@ export class Router {
                 }
             },
         }
+        if (!AuthUtils.getAuthInfo(AuthUtils.accessTokenKey) && window.location.pathname !== '/sign-up') {
+            if (this.routes[window.location.pathname]) {
+                this.openNewRoute('/login').then()
+            } else {this.openNewRoute('/404').then()}
+        }
+        this.initEvents();
     }
 
     initEvents() {
@@ -203,6 +222,11 @@ export class Router {
     }
 
     async openNewRoute(url) {
+        if (!AuthUtils.getAuthInfo(AuthUtils.accessTokenKey) && url !== '/sign-up') {
+            if (this.routes[window.location.pathname]) {
+               url = '/login'
+            } else {url ='/404'}
+        }
         const currentRoute = window.location.pathname;
         history.pushState(null, '', url);
         await this.activateRoute(null, currentRoute)
@@ -234,22 +258,23 @@ export class Router {
         if (oldRoute) {
             const currentRoute = this.routes[oldRoute];
             this.historyBackLink = oldRoute
-            if (currentRoute.styles && currentRoute.styles.length > 0) {
-                currentRoute.styles.forEach(style => {
-                    document.querySelector(`link[href='/css/${style}']`).remove();
+            if (currentRoute) {
+                if (currentRoute.styles && currentRoute.styles.length > 0) {
+                    currentRoute.styles.forEach(style => {
+                        document.querySelector(`link[href='/css/${style}']`).remove();
 
-                });
-            }
-            if (currentRoute.scripts && currentRoute.scripts.length > 0) {
-                currentRoute.scripts.forEach(script => {
-                    document.querySelector(`script[src='/js/${script}']`).remove();
+                    });
+                }
+                if (currentRoute.scripts && currentRoute.scripts.length > 0) {
+                    currentRoute.scripts.forEach(script => {
+                        document.querySelector(`script[src='/js/${script}']`).remove();
 
-                });
+                    });
+                }
+                if (currentRoute.unload && typeof currentRoute.load === 'function') {
+                    currentRoute.unload();
+                }
             }
-            if (currentRoute.unload && typeof currentRoute.load === 'function') {
-                currentRoute.unload();
-            }
-
         }
 
 
