@@ -1,7 +1,7 @@
 import {MainPage} from "./components/main-page";
 import {Balance} from "./components/balance";
 import {Login} from "./components/auth/login";
-import {SignUp} from "./components/sign-up";
+import {SignUp} from "./components/auth/sign-up";
 import {CategoriesExpense} from "./components/categories-expense";
 import {CategoriesIncome} from "./components/categories-income";
 import {IncomeEdit} from "./components/income-edit";
@@ -178,7 +178,7 @@ export class Router {
 
                 }
             },
-            '/operation/create': {
+            '/balance/create': {
                 title: 'Создать операцию',
                 filePathTemplate: '/templates/pages/balance/operation.html',
                 useLayout: '/templates/layout.html',
@@ -192,7 +192,7 @@ export class Router {
 
                 }
             },
-            '/operation/edit': {
+            '/balance/edit': {
                 title: 'Редактировать операцию',
                 filePathTemplate: '/templates/pages/balance/operation.html',
                 useLayout: '/templates/layout.html',
@@ -298,6 +298,19 @@ export class Router {
                     contentBlock.innerHTML = await fetch(newRoute.useLayout).then(res => res.text());
                     contentBlock = document.getElementById('content-layout')
                     this.activateMenuItem(window.location.pathname)
+
+                    this.profileNameElement = document.getElementById('profile-name');
+                    if (!this.userName) {
+                        let userInfo = AuthUtils.getAuthInfo(AuthUtils.userInfoTokenKey);
+                        if (userInfo) {
+                            userInfo = JSON.parse(userInfo);
+                            if (userInfo.name) {
+                                this.userName = `${userInfo.name} ${userInfo.lastName}`;
+                            }
+                        }
+                    }
+                    this.profileNameElement.innerText = this.userName;
+
                 }
                 contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(res => res.text());
             }

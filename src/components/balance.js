@@ -76,7 +76,7 @@ export class Balance {
                     date: currentRow[4].innerText,
                     commentary: currentRow[5].innerText,
                 }
-                this.openNewRoute(`/operation/edit?data=${JSON.stringify(data)}`);
+                this.openNewRoute(`/balance/edit?data=${JSON.stringify(data)}`);
             })
         })
 

@@ -16,14 +16,18 @@ export class AuthService {
     static async signUp(data) {
         const result = await HttpUtils.request('/signup', 'POST', false, data);
 
-        if (result.error || !result.response || (result.response && (!result.response.accessToken ||
-            !result.response.refreshToken || !result.response.id || !result.response.name))) {
+        if (result.response.error || !result.response.user) {
             if (result.response && result.response.message) {
                 return {errorMessage: result.response.message};
             }
             return false;
         }
-        return result.response;
+
+        return  await this.logIn({
+            email: data.email,
+            password: data.password,
+            rememberMe: false,
+        })
     }
 
     static async logOut (data) {

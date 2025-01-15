@@ -12,7 +12,7 @@ export class Logout {
     }
 
     async logout() {
-        await AuthService.logOut({refreshToken: this.refreshToken.value});
+        await AuthService.logOut({refreshToken: this.refreshToken});
         AuthUtils.removeAuthInfo();
         this.openNewRoute('/login')
     }
