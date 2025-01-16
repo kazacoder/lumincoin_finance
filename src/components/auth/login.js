@@ -1,5 +1,6 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
+import {BalanceService} from "../../services/balance-service";
 
 export class Login {
     constructor(openNewRoute) {
@@ -45,6 +46,7 @@ export class Login {
                         lastName: loginResult.user.lastName,
                     });
                 }
+                await BalanceService.saveBalanceToStorage()
                 return this.openNewRoute('/')
             }
             this.commonErrorElement.style.display = 'block';

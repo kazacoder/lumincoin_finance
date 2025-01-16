@@ -1,5 +1,6 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
+import {BalanceService} from "../../services/balance-service";
 
 export class SignUp {
     constructor(openNewRoute) {
@@ -88,6 +89,7 @@ export class SignUp {
                     name: signUpResult.user.name,
                     lastName: signUpResult.user.lastName,
                 });
+                await BalanceService.saveBalanceToStorage()
                 return this.openNewRoute('/');
             }
             this.commonErrorElement.style.display = 'block';

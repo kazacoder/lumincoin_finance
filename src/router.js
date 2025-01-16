@@ -13,6 +13,7 @@ import {ExpenseEdit} from "./components/expense-edit";
 import {ExpenseCreate} from "./components/expense-create";
 import {Logout} from "./components/auth/logout";
 import {AuthUtils} from "./utils/auth-utils";
+import {BalanceService} from "./services/balance-service";
 
 
 export class Router {
@@ -310,6 +311,8 @@ export class Router {
                         }
                     }
                     this.profileNameElement.innerText = this.userName;
+
+                    document.getElementById('balance').innerText = `${parseInt(BalanceService.gerUserBalance()).toLocaleString()} $`
 
                 }
                 contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(res => res.text());
