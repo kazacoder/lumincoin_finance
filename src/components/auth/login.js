@@ -5,9 +5,9 @@ import {BalanceService} from "../../services/balance-service";
 export class Login {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
-        if (AuthUtils.getAuthInfo(AuthUtils.accessTokenKey)) {
-            return this.openNewRoute('/')
-        }
+        // if (AuthUtils.getAuthInfo(AuthUtils.accessTokenKey)) {
+        //     return this.openNewRoute('/')
+        // }
 
         this.findElements()
 
