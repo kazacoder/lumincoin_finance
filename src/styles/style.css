@@ -155,6 +155,12 @@ body {
 .sidebar .logo img {
   width: 100px;
 }
+.sidebar .category-wrapper.active {
+  margin: -1px;
+}
+.sidebar .profile a span {
+  white-space: pre-wrap;
+}
 
 .btn.sidebar-close {
   position: absolute;

@@ -1,24 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../lib/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="../styles/style.css">
-    <title>Вход</title>
-</head>
-<body>
-
 <div class="login-box container-fluid">
     <div class="d-flex align-items-center min-vh-100 justify-content-center">
         <div class="auth-form container">
             <div class="login-logo text-center mb-60">
-                <a href="javascript:void(0);"><img src="../static/images/logo.png" alt="logo"></a>
+                <a href="javascript:void(0);"><img src="/images/logo.png" alt="logo"></a>
             </div>
             <div class="card-body login-card-body">
                 <h1 class="auth-form__title text-center mb-20">Вход</h1>
                 <div id="common-error" class="error invalid-feedback text-center mb-3">Ошибка авторизации</div>
-                <form class="auth-form form" action="../../index.html">
+                <form class="auth-form form">
                     <div>
                         <div class="input-group mb-10">
                             <div class="login-icon" id="email-div">
@@ -54,16 +43,12 @@
                             Запомнить меня
                         </label>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block w-100 mb-10 f-weight-500" id="login">
+                    <button type="button" class="btn btn-primary btn-block w-100 mb-10 f-weight-500" id="login">
                         Войти
                     </button>
                 </form>
             </div>
-            <p class="f-size-12">Ещё нет аккаунта? <a href="./sign-up.html">Пройдите регистрацию</a></p>
+            <p class="f-size-12">Ещё нет аккаунта? <a href="/sign-up">Пройдите регистрацию</a></p>
         </div>
     </div>
 </div>
-
-<script src="../components/login.js"></script>
-</body>
-</html>

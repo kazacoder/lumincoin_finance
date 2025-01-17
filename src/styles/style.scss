@@ -176,6 +176,12 @@ body {
       width: 100px;
     }
   }
+  .category-wrapper.active {
+    margin: -1px;
+  }
+  .profile a span {
+    white-space:pre-wrap;
+  }
 }
 
 .btn {
@@ -204,6 +210,8 @@ body {
   background-color: #0d6efd;
   color: white!important;
 }
+
+
 
 // main content layout styles
 .main-content {
