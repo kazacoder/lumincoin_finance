@@ -1,25 +1,32 @@
+import {HttpUtils} from "../../utils/http-utils";
+
 export class ExpenseCreate {
 
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
-        this.loadExpenseEdit();
+        this.categoryNameElement = document.getElementById("category-name");
+        this.createButtonElement = document.getElementById("proceed");
+        this.init();
+        this.setCategory().then();
     }
 
-    loadExpenseEdit() {
-        const categoryNameElement = document.getElementById("category-name");
-        const createButtonElement = document.getElementById("proceed");
-
-
+    init() {
         document.querySelector('.main-content__title').innerText = 'Создание категории расходов';
         document.getElementById('cancel').href = '/categories/expense';
-        createButtonElement.addEventListener("click", () => {
-            categoryNameElement.classList.remove("is-invalid");
+        this.createButtonElement.innerText = 'Создать';
+    }
 
-            if (!categoryNameElement.value) {
-                categoryNameElement.classList.add("is-invalid");
+    async setCategory() {
+        this.createButtonElement.addEventListener("click", (e) => {
+            this.categoryNameElement.classList.remove("is-invalid");
+
+            if (!this.categoryNameElement.value) {
+                this.categoryNameElement.classList.add("is-invalid");
                 return;
             }
-            this.openNewRoute(`/categories/expense?catName=${categoryNameElement.value}`);
+            HttpUtils.request('/categories/expense', 'POST', true,
+                {title: this.categoryNameElement.value});
+            this.openNewRoute('/categories/expense');
         })
     }
 }

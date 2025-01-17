@@ -97,7 +97,7 @@ export class Router {
             },
             '/categories/income': {
                 title: 'Категории доходов',
-                filePathTemplate: '/templates/pages/categories/categories-income.html',
+                filePathTemplate: '/templates/pages/categories/categories-list.html',
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
@@ -111,7 +111,7 @@ export class Router {
             },
             '/categories/expense': {
                 title: 'Категории расходов',
-                filePathTemplate: '/templates/pages/categories/categories-expense.html',
+                filePathTemplate: '/templates/pages/categories/categories-list.html',
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
@@ -316,6 +316,7 @@ export class Router {
 
                 }
                 contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(res => res.text());
+                document.body.removeAttribute('style');
             }
 
             if (newRoute.scripts && newRoute.scripts.length > 0) {

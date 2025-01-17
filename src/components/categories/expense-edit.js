@@ -1,32 +1,44 @@
+import {HttpUtils} from "../../utils/http-utils";
+
 export class ExpenseEdit {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
-        this.loadExpenseEdit();
+        this.categoryNameElement = document.getElementById("category-name");
+        this.saveButtonElement = document.getElementById("proceed");
+        this.init();
+        this.getCategory().then();
     }
 
-    loadExpenseEdit() {
-        const categoryNameElement = document.getElementById("category-name");
-        const saveButtonElement = document.getElementById("proceed");
-        const params = new URLSearchParams(location.search)
-        const oldCatName = params.get("category");
-        categoryNameElement.value = oldCatName
-
+    init() {
         document.querySelector('.main-content__title').innerText = 'Редактирование категории расходов';
         document.getElementById('cancel').href = '/categories/expense';
-        saveButtonElement.addEventListener("click", () => {
-            categoryNameElement.classList.remove("is-invalid");
+    }
 
-            if (!categoryNameElement.value) {
-                categoryNameElement.classList.add("is-invalid");
+    async getCategory() {
+        const params = new URLSearchParams(location.search)
+        const catId = params.get("category");
+        const result = await HttpUtils.request(`/categories/expense/${catId}`, 'GET')
+        this.showCategory(result.response).then();
+    }
+
+    async showCategory(category) {
+        this.categoryNameElement.value = category.title;
+
+        this.saveButtonElement.addEventListener("click", () => {
+            this.categoryNameElement.classList.remove("is-invalid");
+
+            if (!this.categoryNameElement.value) {
+                this.categoryNameElement.classList.add("is-invalid");
                 return;
             }
-            if (categoryNameElement.value !== oldCatName) {
-                this.openNewRoute(`/categories/expense?changed=true&newCatName=${categoryNameElement.value}&oldCatName=${oldCatName}`);
-                return;
+            if (this.categoryNameElement.value !== category.title) {
+                HttpUtils.request(`/categories/expense/${category.id}`, 'PUT', true,
+                    {title: this.categoryNameElement.value});
             }
             this.openNewRoute('/categories/expense');
         })
     }
+
 }
 
 

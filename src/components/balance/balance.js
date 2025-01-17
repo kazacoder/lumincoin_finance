@@ -1,7 +1,15 @@
+import {HttpUtils} from "../../utils/http-utils";
+
 export class Balance {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
-        this.loadBalance()
+        this.loadBalance();
+        this.getBalance().then();
+    }
+
+    async getBalance() {
+        const result = await HttpUtils.request('/operations', 'GET');
+        console.log(result)
     }
 
     loadBalance() {
