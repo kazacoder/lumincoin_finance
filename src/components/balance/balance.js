@@ -3,16 +3,63 @@ import {HttpUtils} from "../../utils/http-utils";
 export class Balance {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
-        this.loadBalance();
+        this.periods = document.querySelectorAll('.period-selection a')
+        this.init();
         this.getBalance().then();
+    }
+
+    init() {
+        const currentPeriod = new URLSearchParams(location.search).get('period');
+        this.periods.forEach(period => {
+            period.classList.remove('btn-secondary');
+            period.classList.add('btn-outline-secondary');
+            if (period.id === currentPeriod) {
+                period.classList.add('btn-secondary');
+                period.classList.remove('btn-outline-secondary');
+            }
+        })
     }
 
     async getBalance() {
         const result = await HttpUtils.request('/operations', 'GET');
-        console.log(result)
+        this.loadBalance(result.response);
     }
 
-    loadBalance() {
+    loadBalance(operations) {
+        operations.forEach(operation => {
+            const trElement = document.createElement("tr");
+            const thElement = document.createElement("th");
+            thElement.setAttribute('scope', 'row');
+            thElement.classList.add('row_number');
+            thElement.innerText = document.getElementById('balance-table').rows.length
+            trElement.appendChild(thElement)
+            const typeCellElement = document.createElement("td");
+            typeCellElement.innerText = operation.type  === 'income' ? 'доход' : 'расход'
+            if (operation.type === "expense") {
+                typeCellElement.classList.add('text-danger')
+            } else {
+                typeCellElement.classList.add('text-success')
+            }
+            trElement.appendChild(typeCellElement)
+
+            trElement.insertCell().innerText = operation.category.toLocaleLowerCase();
+            trElement.insertCell().innerText = `${parseInt(operation.amount).toLocaleString()}$`;
+            trElement.insertCell().innerText = (new Date(operation.date)).toLocaleDateString();
+            trElement.insertCell().innerText = operation.comment;
+            trElement.insertCell().innerHTML = `
+                            <div class="balance-table__actions">
+                                <button class="btn m-0 p-0 remove-button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                <button class="btn m-0 p-0 edit-operation">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+    `
+            document.getElementById('records').appendChild(trElement);
+        })
+
+
         const data = (new URLSearchParams(window.location.search)).get('data')
         const tableRowsNumbersElements = document.querySelectorAll('.row_number')
         const tableRowsNumbers = []

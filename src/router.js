@@ -22,7 +22,6 @@ export class Router {
         this.contentPageElement = document.getElementById('content');
         this.historyBackLink = null;
         this.userName = null
-        console.log(window.location.pathname)
 
         this.routes = {
             '/': {
