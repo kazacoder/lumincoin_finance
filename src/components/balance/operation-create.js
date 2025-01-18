@@ -1,60 +1,119 @@
+import {HttpUtils} from "../../utils/http-utils";
+
 export class OperationCreate {
     constructor(openNewRoute) {
+        this.categorySelectElement = null;
+        this.typeSelectElement = null;
         this.openNewRoute = openNewRoute;
-        this.loadTemp();
+        this.init().then();
     }
 
-    loadTemp() {
-        const type = (new URLSearchParams(window.location.search)).get('type');
-        const createButton = document.getElementById('proceed');
-        const typeSelectElement = document.getElementById('type');
-        const categorySelectElement = document.getElementById('category');
-        const amountInputElement = document.getElementById('amount');
-        const dateInputElement = document.getElementById('date');
-        const commentaryInputElement = document.getElementById('commentary');
+    async getCategories(type) {
+        const result = await HttpUtils.request('/categories/' + type, 'GET');
+        return result.response;
+    }
 
-        if (type === 'income') {
-            typeSelectElement.children[1].setAttribute('selected', '');
-        } else if (type === 'expense') {
-            typeSelectElement.children[2].setAttribute('selected', '');
+    async init() {
+        const type = (new URLSearchParams(window.location.search)).get('type');
+
+        console.log(document.referrer);
+
+        this.categorySelectElement = document.getElementById("category");
+        this.typeSelectElement = document.getElementById('type');
+        this.createButton = document.getElementById('proceed');
+        this.cancelButton = document.getElementById('cancel');
+        this.amountInputElement = document.getElementById('amount');
+        this.dateInputElement = document.getElementById('date');
+        this.commentaryInputElement = document.getElementById('commentary');
+
+
+        this.typeOptionsObject = {}
+        for (let el of this.typeSelectElement.children) {
+            if (el.value) {
+                this.typeOptionsObject[el.value] = el;
+            }
+        }
+        this.setInitialType(type);
+
+        this.typeSelectElement.addEventListener('change', (e) => {
+            document.querySelectorAll('.added-option-category').forEach(item => {
+                item.remove();
+            });
+            this.loadCategoryList(e.target.value);
+        });
+        if (this.typeSelectElement.value) {
+            await this.loadCategoryList(this.typeSelectElement.value)
         }
 
-        createButton.addEventListener('click', (e) => {
-            let hasError = false;
+        this.createButton.addEventListener('click', (e) => {
             e.preventDefault();
 
-            if (!typeSelectElement.value) {
-                typeSelectElement.classList.add('is-invalid');
-                hasError = true;
-            } else {typeSelectElement.classList.remove('is-invalid');}
-
-            if (!categorySelectElement.value) {
-                categorySelectElement.classList.add('is-invalid');
-                hasError = true;
-            } else {categorySelectElement.classList.remove('is-invalid');}
-
-            if (!amountInputElement.value && !dateInputElement.value.match(/^\d+$/)) {
-                amountInputElement.classList.add('is-invalid');
-                hasError = true;
-            } else {amountInputElement.classList.remove('is-invalid');}
-
-            if (!dateInputElement.value) {
-                dateInputElement.classList.add('is-invalid');
-                hasError = true;
-            } else {dateInputElement.classList.remove('is-invalid');}
-
-
-            if (!hasError) {
-                const data = {
-                    type: typeSelectElement.value,
-                    category: categorySelectElement.value,
-                    amount: amountInputElement.value,
-                    date: dateInputElement.value,
-                    commentary: commentaryInputElement.value,
-                }
-                this.openNewRoute(`/balance?data=${JSON.stringify(data)}`);
+            if (!this.validate()) {
+                HttpUtils.request('/operations', 'POST', true, {
+                    type: this.typeSelectElement.value,
+                    category_id: parseInt(this.categorySelectElement.value),
+                    amount: parseInt(this.amountInputElement.value),
+                    date: new Date(this.dateInputElement.value).toISOString().slice(0, 10),
+                    comment: this.commentaryInputElement.value,
+                })
+                this.openNewRoute('/balance?period=today')
             }
         })
+
+        this.cancelButton.href = '/balance?period=today'
+    }
+
+    async loadCategoryList(category) {
+        if (['income', 'expense'].includes(category)) {
+            const categories = await this.getCategories(category);
+            categories.forEach(category => {
+                const optionElement = document.createElement('option');
+                optionElement.value = category.id;
+                optionElement.innerText = category.title;
+                optionElement.classList.add('added-option-category');
+                this.categorySelectElement.appendChild(optionElement);
+            });
+        }
+    }
+
+    setInitialType(type) {
+        if (this.typeOptionsObject[type]) {
+            this.typeOptionsObject[type].setAttribute('selected', '');
+        }
+    }
+
+    validate() {
+        let hasError = false;
+
+        if (!this.typeSelectElement.value) {
+            this.typeSelectElement.classList.add('is-invalid');
+            hasError = true;
+        } else {
+            this.typeSelectElement.classList.remove('is-invalid');
+        }
+
+        if (!this.categorySelectElement.value) {
+            this.categorySelectElement.classList.add('is-invalid');
+            hasError = true;
+        } else {
+            this.categorySelectElement.classList.remove('is-invalid');
+        }
+
+        if (!this.amountInputElement.value && !this.dateInputElement.value.match(/^\d+$/)) {
+            this.amountInputElement.classList.add('is-invalid');
+            hasError = true;
+        } else {
+            this.amountInputElement.classList.remove('is-invalid');
+        }
+
+        if (!this.dateInputElement.value) {
+            this.dateInputElement.classList.add('is-invalid');
+            hasError = true;
+        } else {
+            this.dateInputElement.classList.remove('is-invalid');
+        }
+
+        return hasError
     }
 }
 

@@ -362,7 +362,8 @@ export class Router {
         const menuItem = document.querySelectorAll('.sidebar .nav-link');
         menuItem.forEach(item => {
             const href = item.getAttribute('href');
-            if (route.includes(href) && '/' !== href || (route === '/' && href === '/')) {
+            const cleanedHref = href ? href.replace(/\?.+/gm, '') : href;
+            if (route.includes(cleanedHref) && '/' !== href || (route === '/' && href === '/')) {
                 item.classList.add('active');
             } else item.classList.remove('active')
 
