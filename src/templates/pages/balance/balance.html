@@ -17,9 +17,14 @@
         <a id="year" href="/balance?period=year" class="btn btn-outline-secondary w-100-px">Год</a>
         <a id="all" href="/balance?period=all" class="btn btn-outline-secondary w-100-px">Все</a>
         <a id="interval" href="/balance?period=interval" class="btn btn-outline-secondary w-100-px">Интервал</a>
-        <div class="d-flex interval align-items-center">
-            с <span><a href="#" class="link-secondary">Дата</a></span>
-            по <span><a href="#" class="link-secondary">Дата</a></span>
+        <div class="d-flex flex-wrap interval align-items-center justify-content-center">
+            <div>
+                с <span><input id="dateFrom" class="ms-1" type="date" disabled></span>
+            </div>
+            <div>
+                по <span><input id="dateTo" class="ms-1" type="date" disabled></span>
+            </div>
+
         </div>
     </div>
 

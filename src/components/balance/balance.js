@@ -4,13 +4,17 @@ export class Balance {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
         this.periods = document.querySelectorAll('.period-selection a');
+        this.dateFromElement = document.getElementById('dateFrom');
+        this.dateToElement = document.getElementById('dateTo');
         this.createIncomeButton = document.getElementById("create-income");
         this.createExpenseButton = document.getElementById("create-expense");
+        this.tableBody = document.getElementById('records');
         this.init();
         this.getBalance().then();
     }
 
     init() {
+        const today = new Date();
         const currentPeriod = new URLSearchParams(location.search).get('period');
         this.createIncomeButton.href += `&period=${currentPeriod}`;
         this.createExpenseButton.href += `&period=${currentPeriod}`;
@@ -21,6 +25,20 @@ export class Balance {
                 period.classList.add('btn-secondary');
                 period.classList.remove('btn-outline-secondary');
             }
+            if (currentPeriod === 'interval') {
+                this.dateFromElement.disabled = false;
+                this.dateToElement.disabled = false;
+                this.dateFromElement.value = (new Date(today.getFullYear(), 0, 2)).toISOString().slice(0, 10);
+                this.dateToElement.value = (new Date(today.getFullYear(), today.getMonth() + 1, 1)).toISOString().slice(0, 10);
+            }
+        })
+        this.dateFromElement.addEventListener('change', () => {
+            this.tableBody.innerHTML = '';
+            this.getBalance().then()
+        })
+        this.dateToElement.addEventListener('change', () => {
+            this.tableBody.innerHTML = '';
+            this.getBalance().then()
         })
     }
 
@@ -30,7 +48,7 @@ export class Balance {
         let params = `?period=${this.period}`
         if (this.period === 'interval') {
 
-            params += `&dateFrom=2022-09-12&dateTo=2022-09-13`;
+            params += `&dateFrom=${this.dateFromElement.value}&dateTo=${this.dateToElement.value}`;
         } else if (this.period === 'today') {
             const today = new Date().toISOString().slice(0, 10);
             params = `?period=interval&dateFrom=${today}&dateTo=${today}`;
