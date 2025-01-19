@@ -3,13 +3,17 @@ import {HttpUtils} from "../../utils/http-utils";
 export class Balance {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
-        this.periods = document.querySelectorAll('.period-selection a')
+        this.periods = document.querySelectorAll('.period-selection a');
+        this.createIncomeButton = document.getElementById("create-income");
+        this.createExpenseButton = document.getElementById("create-expense");
         this.init();
         this.getBalance().then();
     }
 
     init() {
         const currentPeriod = new URLSearchParams(location.search).get('period');
+        this.createIncomeButton.href += `&period=${currentPeriod}`;
+        this.createExpenseButton.href += `&period=${currentPeriod}`;
         this.periods.forEach(period => {
             period.classList.remove('btn-secondary');
             period.classList.add('btn-outline-secondary');
@@ -21,12 +25,13 @@ export class Balance {
     }
 
     async getBalance() {
-        const period = new URLSearchParams(location.search).get('period');
-        let params = `?period=${period}`
-        if (period === 'interval') {
+        this.period = new URLSearchParams(location.search).get('period');
+
+        let params = `?period=${this.period}`
+        if (this.period === 'interval') {
 
             params += `&dateFrom=2022-09-12&dateTo=2022-09-13`;
-        } else if (period === 'today') {
+        } else if (this.period === 'today') {
             const today = new Date().toISOString().slice(0, 10);
             params = `?period=interval&dateFrom=${today}&dateTo=${today}`;
         }
@@ -60,7 +65,7 @@ export class Balance {
                                 <button class="btn m-0 p-0 remove-button" data-bs-toggle="modal" data-bs-target="#deleteModal">
                                     <i class="bi bi-trash"></i>
                                 </button>
-                                <a href="/balance/edit?catId=1" class="btn m-0 p-0 edit-operation">
+                                <a href="/balance/edit?operationId=${operation.id}&period=${this.period}" class="btn m-0 p-0 edit-operation">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </div>

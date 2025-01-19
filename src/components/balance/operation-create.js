@@ -4,6 +4,7 @@ export class OperationCreate {
     constructor(openNewRoute) {
         this.categorySelectElement = null;
         this.typeSelectElement = null;
+        this.period = 'today';
         this.openNewRoute = openNewRoute;
         this.init().then();
     }
@@ -40,9 +41,15 @@ export class OperationCreate {
                 item.remove();
             });
             this.loadCategoryList(e.target.value);
+            this.categorySelectElement.value = '';
         });
         if (this.typeSelectElement.value) {
             await this.loadCategoryList(this.typeSelectElement.value)
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('period')) {
+            this.period = params.get('period');
         }
 
         this.createButton.addEventListener('click', (e) => {
@@ -56,11 +63,11 @@ export class OperationCreate {
                     date: new Date(this.dateInputElement.value).toISOString().slice(0, 10),
                     comment: this.commentaryInputElement.value,
                 })
-                this.openNewRoute('/balance?period=today')
+                this.openNewRoute(`/balance?period=${this.period}`)
             }
         })
 
-        this.cancelButton.href = '/balance?period=today'
+        this.cancelButton.href = `/balance?period=${this.period}`
     }
 
     async loadCategoryList(category) {

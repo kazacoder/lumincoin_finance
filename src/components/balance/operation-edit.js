@@ -1,83 +1,149 @@
+import {HttpUtils} from "../../utils/http-utils";
+
 export class OperationEdit {
     constructor(openNewRoute) {
+        this.categorySelectElement = null;
+        this.typeSelectElement = null;
+        this.period = 'today';
         this.openNewRoute = openNewRoute;
-        this.loadTemp()
+        this.init().then();
     }
-    loadTemp()    {
-        const data = JSON.parse((new URLSearchParams(window.location.search)).get('data'));
-        const saveButton = document.getElementById('proceed');
-        const typeSelectElement = document.getElementById('type');
-        const categorySelectElement = document.getElementById('category');
-        const amountInputElement = document.getElementById('amount');
-        const dateInputElement = document.getElementById('date');
-        const commentaryInputElement = document.getElementById('commentary');
 
-        if (data) {
-            if (data['type'] === 'расход') {
-                typeSelectElement.children[2].setAttribute('selected', '')
-            } else if (data['type'] === 'доход') {
-                typeSelectElement.children[1].setAttribute('selected', '')
-            }
+    async getCategories(type) {
+        const result = await HttpUtils.request('/categories/' + type, 'GET');
+        return result.response;
+    }
 
-            for (let option of categorySelectElement) {
-                if (option.value === data['category']) {
-                    option.setAttribute('selected', '')
-                }
+    async loadCurrentOperation(id) {
+        const result = await HttpUtils.request(`/operations/${id}`, 'GET');
+
+        if (result.response && !result.response.error) {
+            this.curretnOperation = result.response;
+            this.setInitialType(this.curretnOperation.type);
+            if (this.typeSelectElement.value) {
+                await this.loadCategoryList(this.typeSelectElement.value)
             }
-            amountInputElement.value = data['amount'];
-            dateInputElement.value = new Date(data['date'].split('.').reverse().join('-')).toISOString().slice(0, 10);
-            commentaryInputElement.value = data['commentary'];
+            this.curretnOperation.category_id = this.categoryObject[this.curretnOperation.category]
+            this.categorySelectElement.value = this.categoryObject[this.curretnOperation.category]
+            this.amountInputElement.value = this.curretnOperation.amount;
+            this.dateInputElement.value = new Date(this.curretnOperation.date.split('.').reverse().join('-')).toISOString().slice(0, 10);
+            this.commentaryInputElement.value = this.curretnOperation.comment;
         }
+        console.log(result.response);
 
+    }
 
+    async init() {
+        this.categorySelectElement = document.getElementById("category");
+        this.typeSelectElement = document.getElementById('type');
+        this.saveButton = document.getElementById('proceed');
+        this.cancelButton = document.getElementById('cancel');
+        this.amountInputElement = document.getElementById('amount');
+        this.dateInputElement = document.getElementById('date');
+        this.commentaryInputElement = document.getElementById('commentary');
+
+        this.typeOptionsObject = {}
+        for (let el of this.typeSelectElement.children) {
+            if (el.value) {
+                this.typeOptionsObject[el.value] = el;
+            }
+        }
 
         document.querySelector('.main-content__title').innerText = 'Редактирование дохода/расхода';
 
-        saveButton.innerText = 'Сохранить'
+        this.saveButton.innerText = 'Сохранить'
 
-        saveButton.addEventListener('click', (e) => {
-            let hasError = false;
+        this.typeSelectElement.addEventListener('change', (e) => {
+            document.querySelectorAll('.added-option-category').forEach(item => {
+                item.remove();
+            });
+            this.loadCategoryList(e.target.value);
+            this.categorySelectElement.value = '';
+        });
+
+
+        const params = new URLSearchParams(window.location.search);
+        const operationId = params.get('operationId');
+        if (params.get('period')) {
+            this.period = params.get('period');
+        }
+        await this.loadCurrentOperation(operationId);
+
+        this.saveButton.addEventListener('click', (e) => {
             e.preventDefault();
 
-            if (!typeSelectElement.value) {
-                typeSelectElement.classList.add('is-invalid');
-                hasError = true;
-            } else {typeSelectElement.classList.remove('is-invalid');}
-
-            if (!categorySelectElement.value) {
-                categorySelectElement.classList.add('is-invalid');
-                hasError = true;
-            } else {
-                categorySelectElement.classList.remove('is-invalid');
-            }
-
-            if (!amountInputElement.value && !dateInputElement.value.match(/^\d+$/)) {
-                amountInputElement.classList.add('is-invalid');
-                hasError = true;
-            } else {
-                amountInputElement.classList.remove('is-invalid');
-            }
-
-            if (!dateInputElement.value) {
-                dateInputElement.classList.add('is-invalid');
-                hasError = true;
-            } else {
-                dateInputElement.classList.remove('is-invalid');
-            }
-
-
-            if (!hasError) {
-                console.log('valid')
-                const changedData = {
-                    id: (data ? data.id : null),
-                    type: typeSelectElement.value,
-                    category: categorySelectElement.value,
-                    amount: amountInputElement.value,
-                    date: dateInputElement.value,
-                    commentary: commentaryInputElement.value,
+            if (!this.validate()) {
+                const changedOperation = {}
+                changedOperation.type = this.typeSelectElement.value;
+                changedOperation.category_id = parseInt(this.categorySelectElement.value);
+                changedOperation.amount = parseInt(this.amountInputElement.value);
+                changedOperation.date = new Date(this.dateInputElement.value).toISOString().slice(0, 10);
+                changedOperation.comment = this.commentaryInputElement.value;
+                const hasChanged = Object.keys(changedOperation).map(key => {
+                    return changedOperation[key] !== this.curretnOperation[key]
+                }).some(Boolean);
+                if (hasChanged) {
+                    HttpUtils.request(`/operations/${operationId}`, 'PUT', true, changedOperation)
                 }
-                this.openNewRoute(`/balance?data=${JSON.stringify(changedData)}`);
+                this.openNewRoute(`/balance?period=${this.period}`)
             }
         })
+        this.cancelButton.href = `/balance?period=${this.period}`
+    }
+
+    async loadCategoryList(category) {
+        this.categoryObject = {}
+        if (['income', 'expense'].includes(category)) {
+            const categories = await this.getCategories(category);
+            categories.forEach(category => {
+                const optionElement = document.createElement('option');
+                optionElement.value = category.id;
+                optionElement.innerText = category.title;
+                optionElement.classList.add('added-option-category');
+                this.categorySelectElement.appendChild(optionElement);
+                this.categoryObject[category.title] = category.id;
+            });
+        }
+
+    }
+
+    setInitialType(type) {
+        if (this.typeOptionsObject[type]) {
+            this.typeOptionsObject[type].setAttribute('selected', '');
+        }
+    }
+
+    validate() {
+        let hasError = false;
+
+        if (!this.typeSelectElement.value) {
+            this.typeSelectElement.classList.add('is-invalid');
+            hasError = true;
+        } else {
+            this.typeSelectElement.classList.remove('is-invalid');
+        }
+
+        if (!this.categorySelectElement.value) {
+            this.categorySelectElement.classList.add('is-invalid');
+            hasError = true;
+        } else {
+            this.categorySelectElement.classList.remove('is-invalid');
+        }
+
+        if (!this.amountInputElement.value && !this.dateInputElement.value.match(/^\d+$/)) {
+            this.amountInputElement.classList.add('is-invalid');
+            hasError = true;
+        } else {
+            this.amountInputElement.classList.remove('is-invalid');
+        }
+
+        if (!this.dateInputElement.value) {
+            this.dateInputElement.classList.add('is-invalid');
+            hasError = true;
+        } else {
+            this.dateInputElement.classList.remove('is-invalid');
+        }
+
+        return hasError
     }
 }
