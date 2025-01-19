@@ -311,7 +311,8 @@ export class Router {
                     }
                     this.profileNameElement.innerText = this.userName;
 
-                    document.getElementById('balance').innerText = `${parseInt(BalanceService.gerUserBalance()).toLocaleString()} $`
+                    const balance = await BalanceService.getBalance()
+                    document.getElementById('balance').innerText = `${parseInt(balance).toLocaleString()} $`
 
                 }
                 contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(res => res.text());

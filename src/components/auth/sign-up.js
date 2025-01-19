@@ -89,7 +89,6 @@ export class SignUp {
                     name: signUpResult.user.name,
                     lastName: signUpResult.user.lastName,
                 });
-                await BalanceService.saveBalanceToStorage()
                 return this.openNewRoute('/');
             }
             this.commonErrorElement.style.display = 'block';

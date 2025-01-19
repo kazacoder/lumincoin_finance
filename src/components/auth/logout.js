@@ -15,7 +15,6 @@ export class Logout {
     async logout() {
         await AuthService.logOut({refreshToken: this.refreshToken});
         AuthUtils.removeAuthInfo();
-        BalanceService.clearBalance()
         this.openNewRoute('/login')
     }
 }

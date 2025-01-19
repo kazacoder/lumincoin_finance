@@ -46,7 +46,6 @@ export class Login {
                         lastName: loginResult.user.lastName,
                     });
                 }
-                await BalanceService.saveBalanceToStorage()
                 return this.openNewRoute('/')
             }
             this.commonErrorElement.style.display = 'block';
