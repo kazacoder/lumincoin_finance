@@ -62,7 +62,7 @@ export class Balance {
             trElement.insertCell().innerText = operation.comment;
             trElement.insertCell().innerHTML = `
                             <div class="balance-table__actions">
-                                <button class="btn m-0 p-0 remove-button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <button class="btn m-0 p-0 remove-button" operation-id="${operation.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">
                                     <i class="bi bi-trash"></i>
                                 </button>
                                 <a href="/balance/edit?operationId=${operation.id}&period=${this.period}" class="btn m-0 p-0 edit-operation">
@@ -83,8 +83,10 @@ export class Balance {
                 const cloneBtn = confirmRemoveButton.cloneNode(true)
                 confirmRemoveButton.parentNode.replaceChild(cloneBtn, confirmRemoveButton);
                 cloneBtn.addEventListener('click', () => {
+                    const operationId = btn.getAttribute('operation-id');
                     modal.hide()
                     btn.parentElement.parentElement.parentElement.remove();
+                    HttpUtils.request(`/operations/${operationId}`, 'DELETE').then()
                 })
             })
         })
