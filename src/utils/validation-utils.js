@@ -6,7 +6,7 @@ export class ValidationUtils {
             if (options.hasOwnProperty('pattern')) {
                 condition = element.value && element.value.match(options.pattern)
             } else if (options.hasOwnProperty('compareTo')) {
-                condition = element.value && element.value === options.compareTo
+                condition = element.value && element.value === options.compareTo.value
             } else if (options.hasOwnProperty('checkProperty')) {
                 condition = !!options.checkProperty
             } else if (options.hasOwnProperty('checked')) {

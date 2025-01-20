@@ -15,7 +15,7 @@ export class SignUp {
             {element: this.nameElement},
             {element: this.lastNameElement},
             {element: this.passwordElement},
-            {element: this.passwordConfirmElement, options: {compareTo: this.passwordElement.value}},
+            {element: this.passwordConfirmElement, options: {compareTo: this.passwordElement}},
             // {element: this.passwordElement},
         ]
 

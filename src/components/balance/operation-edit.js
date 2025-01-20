@@ -1,4 +1,5 @@
 import {HttpUtils} from "../../utils/http-utils";
+import {ValidationUtils} from "../../utils/validation-utils";
 
 export class OperationEdit {
     constructor(openNewRoute) {
@@ -41,6 +42,12 @@ export class OperationEdit {
         this.amountInputElement = document.getElementById('amount');
         this.dateInputElement = document.getElementById('date');
         this.commentaryInputElement = document.getElementById('commentary');
+        this.validations = [
+            {element: this.categorySelectElement},
+            {element: this.typeSelectElement},
+            {element: this.amountInputElement},
+            {element: this.dateInputElement},
+        ]
 
         this.typeOptionsObject = {}
         for (let el of this.typeSelectElement.children) {
@@ -72,7 +79,7 @@ export class OperationEdit {
         this.saveButton.addEventListener('click', (e) => {
             e.preventDefault();
 
-            if (!this.validate()) {
+            if (ValidationUtils.validateForm(this.validations)) {
                 const changedOperation = {}
                 changedOperation.type = this.typeSelectElement.value;
                 changedOperation.category_id = parseInt(this.categorySelectElement.value);
@@ -111,39 +118,5 @@ export class OperationEdit {
         if (this.typeOptionsObject[type]) {
             this.typeOptionsObject[type].setAttribute('selected', '');
         }
-    }
-
-    validate() {
-        let hasError = false;
-
-        if (!this.typeSelectElement.value) {
-            this.typeSelectElement.classList.add('is-invalid');
-            hasError = true;
-        } else {
-            this.typeSelectElement.classList.remove('is-invalid');
-        }
-
-        if (!this.categorySelectElement.value) {
-            this.categorySelectElement.classList.add('is-invalid');
-            hasError = true;
-        } else {
-            this.categorySelectElement.classList.remove('is-invalid');
-        }
-
-        if (!this.amountInputElement.value && !this.dateInputElement.value.match(/^\d+$/)) {
-            this.amountInputElement.classList.add('is-invalid');
-            hasError = true;
-        } else {
-            this.amountInputElement.classList.remove('is-invalid');
-        }
-
-        if (!this.dateInputElement.value) {
-            this.dateInputElement.classList.add('is-invalid');
-            hasError = true;
-        } else {
-            this.dateInputElement.classList.remove('is-invalid');
-        }
-
-        return hasError
     }
 }
