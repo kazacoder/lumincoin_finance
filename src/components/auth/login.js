@@ -1,10 +1,15 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
+import {ValidationUtils} from "../../utils/validation-utils";
 
 export class Login {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
         this.findElements()
+        this.validations = [
+            {element: this.passwordElement},
+            {element: this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
+        ]
         document.getElementById("login").addEventListener("click", this.login.bind(this));
     }
 
@@ -17,7 +22,7 @@ export class Login {
 
     async login() {
         this.commonErrorElement.style.display = 'none';
-        if (this.validate()) {
+        if (ValidationUtils.validateForm(this.validations)) {
             const loginResult = await AuthService.logIn({
                 email: this.emailElement.value,
                 password: this.passwordElement.value,
@@ -31,32 +36,13 @@ export class Login {
                     lastName: loginResult.user.lastName,
                 });
 
-                return this.openNewRoute('/?period=today')
+                return this.openNewRoute('/')
             }
             this.commonErrorElement.style.display = 'block';
             if (loginResult && loginResult.errorMessage) {
                 this.commonErrorElement.innerText = loginResult.errorMessage;
             }
         }
-
-    }
-
-    //TODO перенести в утилиты
-    validate() {
-        let isValid = true
-        if (this.emailElement.value && this.emailElement.value.match(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)) {
-            this.emailElement.classList.remove('is-invalid');
-        } else {
-            this.emailElement.classList.add('is-invalid');
-            isValid = false;
-        }
-        if (this.passwordElement.value) {
-            this.passwordElement.classList.remove('is-invalid');
-        } else {
-            this.passwordElement.classList.add('is-invalid');
-            isValid = false;
-        }
-        return isValid;
 
     }
 }

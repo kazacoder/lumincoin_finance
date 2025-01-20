@@ -1,5 +1,6 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
+import {ValidationUtils} from "../../utils/validation-utils";
 
 export class SignUp {
     constructor(openNewRoute) {
@@ -9,6 +10,14 @@ export class SignUp {
         }
 
         this.findElements()
+        this.validations = [
+            {element: this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
+            {element: this.nameElement},
+            {element: this.lastNameElement},
+            {element: this.passwordElement},
+            {element: this.passwordConfirmElement, options: {compareTo: this.passwordElement.value}},
+            // {element: this.passwordElement},
+        ]
 
         document.getElementById("sign-up").addEventListener("click", this.signUp.bind(this));
     }
@@ -72,7 +81,8 @@ export class SignUp {
 
     async signUp() {
         this.commonErrorElement.style.display = 'none';
-        if (this.validate()) {
+        // if (this.validate()) {
+        if (ValidationUtils.validateForm(this.validations)) {
             const signUpResult = await AuthService.signUp({
                 name: this.nameElement.value,
                 lastName: this.lastNameElement.value,
