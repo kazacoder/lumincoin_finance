@@ -78,7 +78,7 @@ export class OperationEdit {
                 changedOperation.category_id = parseInt(this.categorySelectElement.value);
                 changedOperation.amount = parseInt(this.amountInputElement.value);
                 changedOperation.date = new Date(this.dateInputElement.value).toISOString().slice(0, 10);
-                changedOperation.comment = this.commentaryInputElement.value;
+                changedOperation.comment = this.commentaryInputElement.value ? this.commentaryInputElement.value : ' ';
                 const hasChanged = Object.keys(changedOperation).map(key => {
                     return changedOperation[key] !== this.curretnOperation[key]
                 }).some(Boolean);

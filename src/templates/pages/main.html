@@ -5,26 +5,30 @@
     <div class="main-container align-items-center">
         <div class="main-content__title">Главная</div>
         <div class="d-flex period-selection f-weight-500 flex-wrap">
-            <button class="btn btn-secondary w-100-px">Сегодня</button>
-            <button class="btn btn-outline-secondary w-100-px">Неделя</button>
-            <button class="btn btn-outline-secondary w-100-px">Месяц</button>
-            <button class="btn btn-outline-secondary w-100-px">Год</button>
-            <button class="btn btn-outline-secondary w-100-px">Все</button>
-            <button class="btn btn-outline-secondary w-100-px">Интервал</button>
-            <div class="d-flex interval align-items-center">
-                с <span><a href="#" class="link-secondary">Дата</a></span>
-                по <span><a href="#" class="link-secondary">Дата</a></span>
+            <a id="today" href="/?period=today" class="btn btn-outline-secondary w-100-px">Сегодня</a>
+            <a id="week" href="/?period=week" class="btn btn-outline-secondary w-100-px">Неделя</a>
+            <a id="month" href="/?period=month" class="btn btn-outline-secondary w-100-px">Месяц</a>
+            <a id="year" href="/?period=year" class="btn btn-outline-secondary w-100-px">Год</a>
+            <a id="all" href="/?period=all" class="btn btn-outline-secondary w-100-px">Все</a>
+            <a id="interval" href="/?period=interval" class="btn btn-outline-secondary w-100-px">Интервал</a>
+            <div class="d-none flex-wrap interval align-items-center justify-content-center" id="interval-duration">
+                <div>
+                    с <span><input id="dateFrom" class="ms-1" type="date" disabled></span>
+                </div>
+                <div>
+                    по <span><input id="dateTo" class="ms-1" type="date" disabled></span>
+                </div>
             </div>
         </div>
         <div class="d-flex flex-wrap justify-content-around charts">
             <div class="chart-container">
-                <div class="chart-title">Доходы</div>
-                <canvas id="myChart"></canvas>
+                <div class="chart-title">Доходы <span id="total-incomes"></span></div>
+                <canvas id="incomes-chart"></canvas>
             </div>
             <div class="divider"></div>
             <div class="chart-container expenses">
-                <div class="chart-title">Расходы</div>
-                <canvas id="myChart1"></canvas>
+                <div class="chart-title">Расходы <span id="total-expenses"></span></div>
+                <canvas id="expenses-chart"></canvas>
             </div>
         </div>
     </div>

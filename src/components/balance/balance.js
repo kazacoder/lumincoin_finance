@@ -6,6 +6,7 @@ export class Balance {
         this.periods = document.querySelectorAll('.period-selection a');
         this.dateFromElement = document.getElementById('dateFrom');
         this.dateToElement = document.getElementById('dateTo');
+        this.IntervalDurationDivElement = document.getElementById('interval-duration');
         this.createIncomeButton = document.getElementById("create-income");
         this.createExpenseButton = document.getElementById("create-expense");
         this.tableBody = document.getElementById('records');
@@ -26,6 +27,8 @@ export class Balance {
                 period.classList.remove('btn-outline-secondary');
             }
             if (currentPeriod === 'interval') {
+                this.IntervalDurationDivElement.classList.remove('d-none');
+                this.IntervalDurationDivElement.classList.add('d-flex');
                 this.dateFromElement.disabled = false;
                 this.dateToElement.disabled = false;
                 this.dateFromElement.value = (new Date(today.getFullYear(), 0, 2)).toISOString().slice(0, 10);

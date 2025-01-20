@@ -29,7 +29,7 @@ export class Router {
                 filePathTemplate: '/templates/pages/main.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new MainPage()
+                    new MainPage(this.openNewRoute.bind(this));
                 },
                 styles: [],
                 scripts: ['chart.umd.js'],
@@ -364,7 +364,7 @@ export class Router {
         menuItem.forEach(item => {
             const href = item.getAttribute('href');
             const cleanedHref = href ? href.replace(/\?.+/gm, '') : href;
-            if (route.includes(cleanedHref) && '/' !== href || (route === '/' && href === '/')) {
+            if (route.includes(cleanedHref) && '/' !== cleanedHref || (route === '/' && cleanedHref === '/')) {
                 item.classList.add('active');
             } else item.classList.remove('active')
 

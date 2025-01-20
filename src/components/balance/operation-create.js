@@ -61,7 +61,7 @@ export class OperationCreate {
                     category_id: parseInt(this.categorySelectElement.value),
                     amount: parseInt(this.amountInputElement.value),
                     date: new Date(this.dateInputElement.value).toISOString().slice(0, 10),
-                    comment: this.commentaryInputElement.value,
+                    comment: this.commentaryInputElement.value ? this.commentaryInputElement.value : ' ',
                 })
                 this.openNewRoute(`/balance?period=${this.period}`)
             }

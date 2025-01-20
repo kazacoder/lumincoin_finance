@@ -1,16 +1,92 @@
+import {HttpUtils} from "../utils/http-utils";
+
 export class MainPage {
-    constructor() {
-        this.loadCharts()
+    constructor(openNewRoute) {
+        this.openNewRoute = openNewRoute;
+        this.totalIncomesSpanElement = document.getElementById("total-incomes");
+        this.totalExpensesSpanElement = document.getElementById("total-expenses");
+        this.periodElementsCollection = document.querySelectorAll('.period-selection a');
+        this.IntervalDurationDivElement = document.getElementById('interval-duration');
+        this.dateFromElement = document.getElementById('dateFrom');
+        this.dateToElement = document.getElementById('dateTo');
+        this.init();
+        this.getBalance().then();
     }
 
-    loadCharts() {
-        const ctx = document.getElementById('myChart');
-        const ctx2 = document.getElementById('myChart1');
+    init() {
+        const today = new Date();
+        const currentPeriod = new URLSearchParams(location.search).get('period');
+        this.periodElementsCollection.forEach(element => {
+            element.classList.remove('btn-secondary');
+            element.classList.add('btn-outline-secondary');
+            if (element.id === currentPeriod) {
+                element.classList.add('btn-secondary');
+                element.classList.remove('btn-outline-secondary');
+            }
+            if (currentPeriod === 'interval') {
+                this.IntervalDurationDivElement.classList.remove('d-none');
+                this.IntervalDurationDivElement.classList.add('d-flex');
+                this.dateFromElement.disabled = false;
+                this.dateToElement.disabled = false;
+                this.dateFromElement.value = (new Date(today.getFullYear(), 0, 2)).toISOString().slice(0, 10);
+                this.dateToElement.value = (new Date(today.getFullYear(), today.getMonth() + 1, 1)).toISOString().slice(0, 10);
+            }
+        })
+        this.dateFromElement.addEventListener('change', () => {
+            this.incomesChart.destroy()
+            this.expensesChart.destroy()
+            this.getBalance().then()
+        })
+        this.dateToElement.addEventListener('change', () => {
+            this.incomesChart.destroy()
+            this.expensesChart.destroy()
+            this.getBalance().then()
+        })
+    }
 
-        const DATA_COUNT = 5;
-        const NUMBER_CFG = {count: DATA_COUNT, min: 0, max: 100};
+    async getBalance() {
+        this.period = new URLSearchParams(location.search).get('period');
 
-        let _seed = Date.now();
+        let params = `?period=${this.period}`
+        if (this.period === 'interval') {
+
+            params += `&dateFrom=${this.dateFromElement.value}&dateTo=${this.dateToElement.value}`;
+        } else if (this.period === 'today') {
+            const today = new Date().toISOString().slice(0, 10);
+            params = `?period=interval&dateFrom=${today}&dateTo=${today}`;
+        }
+        const result = await HttpUtils.request(`/operations${params}`, 'GET');
+        this.loadCharts(result.response).then();
+    }
+
+
+    async getCategoryAggregation(data, type) {
+        const categoriesRequestResult = await HttpUtils.request(`/categories/${type}`, 'GET');
+        const categoriesObject = {};
+        categoriesRequestResult.response.forEach(element => categoriesObject[element.title] = element.id);
+
+        const total = data.reduce((acc, cur) => acc + cur.amount, 0)
+        const result = data.reduce((acc, cur) => {
+            acc[cur.category] = cur.amount + parseInt(acc[cur.category] || 0);
+            return acc;
+        }, {})
+        let resultArray = Object.keys(result).map(key => [key, result[key], categoriesObject[key]]);
+
+        resultArray.sort((a, b) => a[2] - b[2]);
+
+        return {
+            labels: resultArray.map(item => item[0]),
+            amounts: resultArray.map(item => item[1]),
+            total: total
+        }
+    }
+
+    async loadCharts(balance) {
+        const incomes = await this.getCategoryAggregation(balance.filter(element => element.type === 'income'), 'income');
+        const expenses = await this.getCategoryAggregation(balance.filter(element => element.type === 'expense'), 'expense');
+        const incomesCanvasElement = document.getElementById('incomes-chart');
+        const expensesCanvasElement = document.getElementById('expenses-chart');
+
 
         const CHART_COLORS = {
             red: '#DC3545',
@@ -19,34 +95,49 @@ export class MainPage {
             green: '#20C997',
             blue: '#0D6EFD',
             purple: 'rgb(153, 102, 255)',
-            grey: 'rgb(201, 203, 207)'
+            grey: 'rgb(201, 203, 207)',
+            pink: 'rgb(170,68,120)',
+            brown: 'rgb(73,9,9)',
         };
 
-        const data = {
-            labels: ['Red', 'Orange', 'Yellow', 'Green', 'Blue'],
+        // adding colors to CHART_COLORS pallet
+        const numberOfColors = Math.max(incomes.amounts.length, expenses.amounts.length) - 9;
+
+        for (let i = 0; i < numberOfColors; i++) {
+            console.log(i)
+            CHART_COLORS['color' + i] = `rgb(${rand(0, 255)}, ${rand(0, 255)}, ${rand(0, 255)})`;
+        }
+
+        function rand(frm, to) {
+            return ~~(Math.random() * (to - frm)) + frm;
+        }
+
+
+        const incomesData = {
+            labels: incomes.labels,
             datasets: [
                 {
-                    label: 'Dataset 1',
-                    data: numbers(NUMBER_CFG),
+                    label: 'Доходы',
+                    data: incomes.amounts,
                     backgroundColor: Object.values(CHART_COLORS),
                 }
             ]
         };
 
-        const data2 = {
-            labels: ['Red', 'Orange', 'Yellow', 'Green', 'Blue'],
+        const expensesData = {
+            labels: expenses.labels,
             datasets: [
                 {
-                    label: 'Dataset 1',
-                    data: numbers(NUMBER_CFG),
+                    label: 'Расходы',
+                    data: expenses.amounts,
                     backgroundColor: Object.values(CHART_COLORS),
                 }
             ],
         };
 
-        const config = {
+        const incomesConfig = {
             type: 'pie',
-            data: data,
+            data: incomesData,
             options: {
                 radius: '90%',
                 responsive: true,
@@ -62,9 +153,9 @@ export class MainPage {
             },
         };
 
-        const config2 = {
+        const expensesConfig = {
             type: 'pie',
-            data: data2,
+            data: expensesData,
             options: {
                 radius: '90%',
                 responsive: true,
@@ -81,51 +172,12 @@ export class MainPage {
         };
 
 
-
-
-        function valueOrDefault(option, defaultValue) {
-            return option ? option : defaultValue;
-
-        }
-
-        function rand(min, max) {
-            min = valueOrDefault(min, 0);
-            max = valueOrDefault(max, 0);
-            _seed = (_seed * 9301 + 49297) % 233280;
-            return min + (_seed / 233280) * (max - min);
-        }
-
-        function numbers(config) {
-            const cfg = config || {};
-            const min = valueOrDefault(cfg.min, 0);
-            const max = valueOrDefault(cfg.max, 100);
-            const from = valueOrDefault(cfg.from, []);
-            const count = valueOrDefault(cfg.count, 8);
-            const decimals = valueOrDefault(cfg.decimals, 8);
-            const continuity = valueOrDefault(cfg.continuity, 1);
-            const dfactor = Math.pow(10, decimals) || 0;
-            const data = [];
-            let i, value;
-
-            for (i = 0; i < count; ++i) {
-                value = (from[i] || 0) + rand(min, max);
-                if (rand() <= continuity) {
-                    data.push(Math.round(dfactor * value) / dfactor);
-                } else {
-                    data.push(null);
-                }
-            }
-
-            return data;
-        }
-
-
-        new Chart(ctx, config);
-        new Chart(ctx2, config2);
+        this.totalIncomesSpanElement.innerText = incomes.total.toLocaleString() + ' $'
+        this.totalExpensesSpanElement.innerText = expenses.total.toLocaleString() + ' $'
+        this.incomesChart = new Chart(incomesCanvasElement, incomesConfig);
+        this.expensesChart = new Chart(expensesCanvasElement, expensesConfig);
     }
 }
 
-// import Chart from "../../node_modules/chart.js/dist/chart";
-// window.Chart = Chart;
 
 
