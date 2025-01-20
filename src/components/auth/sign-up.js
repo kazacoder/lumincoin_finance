@@ -1,6 +1,5 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
-import {BalanceService} from "../../services/balance-service";
 
 export class SignUp {
     constructor(openNewRoute) {
@@ -83,13 +82,12 @@ export class SignUp {
             })
 
             if (signUpResult && signUpResult.user) {
-                //TODO очистить localStorage, сохранить в sessionStorage
                 AuthUtils.setAuthInfo(signUpResult.tokens.accessToken, signUpResult.tokens.refreshToken, {
                     id: signUpResult.user.id,
                     name: signUpResult.user.name,
                     lastName: signUpResult.user.lastName,
                 });
-                return this.openNewRoute('/');
+                return this.openNewRoute('/?period=today');
             }
             this.commonErrorElement.style.display = 'block';
             if (signUpResult && signUpResult.errorMessage) {
