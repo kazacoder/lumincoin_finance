@@ -2,8 +2,7 @@ import {MainPage} from "./components/main-page";
 import {Balance} from "./components/balance/balance";
 import {Login} from "./components/auth/login";
 import {SignUp} from "./components/auth/sign-up";
-import {CategoriesExpense} from "./components/categories/categories-expense";
-import {CategoriesIncome} from "./components/categories/categories-income";
+import {Categories} from "./components/categories/categories";
 import {IncomeEdit} from "./components/categories/income-edit";
 import {NotFoundError} from "./components/404";
 import {OperationCreate} from "./components/balance/operation-create";
@@ -100,7 +99,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
-                    new CategoriesIncome(this.openNewRoute.bind(this));
+                    new Categories(this.openNewRoute.bind(this), 'income');
                 },
                 styles: [],
                 scripts: [],
@@ -114,7 +113,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
-                    new CategoriesExpense(this.openNewRoute.bind(this));
+                    new Categories(this.openNewRoute.bind(this), 'expense');
                 },
                 styles: [],
                 scripts: [],

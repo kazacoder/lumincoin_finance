@@ -1,14 +1,25 @@
 import {HttpUtils} from "../../utils/http-utils";
 
-export class CategoriesIncome {
-    constructor(openNewRoute) {
+export class Categories {
+    constructor(openNewRoute, type) {
         this.openNewRoute = openNewRoute;
-        this.getCategories().then();
+        this.types = {
+            income: {title: 'Доходы'},
+            expense: {title: 'Расходы'},
+        }
+        this.type = type;
         this.createCategoryElement = document.getElementById("create-category");
+        this.init();
+        this.getCategories().then();
+    }
+
+    init() {
+        document.querySelector('.main-content__title').innerText = this.types[this.type].title;
+        document.getElementById('create-category').href = `/categories/${this.type}/create`;
     }
 
     async getCategories() {
-        const result = await HttpUtils.request('/categories/income', 'GET');
+        const result = await HttpUtils.request(`/categories/${this.type}`, 'GET');
         this.showCategories(result.response).then();
     }
 
@@ -20,7 +31,7 @@ export class CategoriesIncome {
                 <div class="card-body p-20">
                     <div class="card-title h3 f-weight-500" id="${category.id}">${category.title}</div>
                     <div class="actions f-weight-500">
-                        <a href="/categories/income/edit?category=${category.id}" class="btn btn-primary f-size-14 l-height-24 px-3 edit-button">Редактировать</a>
+                        <a href="/categories/${this.type}/edit?category=${category.id}" class="btn btn-primary f-size-14 l-height-24 px-3 edit-button">Редактировать</a>
                         <button type="button" class="btn btn-danger ml-10 f-size-14 l-height-24 px-3 remove-button"
                                 data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить
                         </button>
@@ -42,7 +53,7 @@ export class CategoriesIncome {
                 cloneBtn.addEventListener('click', () => {
                     modal.hide()
                     const catId = btn.parentElement.previousElementSibling.id
-                    HttpUtils.request(`/categories/income/${catId}`, 'DELETE').then(() => {
+                    HttpUtils.request(`/categories/${this.type}/${catId}`, 'DELETE').then(() => {
                         this.clearCategoriesList()
                         this.getCategories().then();
                     })
