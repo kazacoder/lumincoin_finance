@@ -1,5 +1,7 @@
 export class ValidationUtils {
-    static validateField(element, options) {
+    static validateField(object) {
+        const element = object.element;
+        const options = object.options;
         let condition = element.value
 
         if (options) {
@@ -15,6 +17,14 @@ export class ValidationUtils {
 
         }
 
+        if (object.password && element.value && !condition) {
+            object.errorElement.innerText = object.wrongPatternText
+        } else if (object.password) {object.errorElement.innerText = 'Введите пароль'}
+
+        if (object.confirmPassword && element.value && !condition) {
+            object.errorElement.innerText = object.wrongPatternText
+        } else if (object.confirmPassword) {object.errorElement.innerText = 'Введите подтверждение пароля'}
+
         if (condition) {
             element.classList.remove('is-invalid');
             return true;
@@ -28,7 +38,7 @@ export class ValidationUtils {
         let isValid = true
 
         validations.forEach((el) => {
-            if (!ValidationUtils.validateField(el.element, el.options)) {
+            if (!ValidationUtils.validateField(el)) {
                 isValid = false
             }
         })

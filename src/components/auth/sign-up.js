@@ -9,16 +9,8 @@ export class SignUp {
             return this.openNewRoute('/')
         }
 
-        this.findElements()
-        this.validations = [
-            {element: this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
-            {element: this.nameElement},
-            {element: this.lastNameElement},
-            {element: this.passwordElement},
-            {element: this.passwordConfirmElement, options: {compareTo: this.passwordElement}},
-            // {element: this.passwordElement},
-        ]
-
+        this.findElements();
+        this.setValidations();
         document.getElementById("sign-up").addEventListener("click", this.signUp.bind(this));
     }
 
@@ -29,59 +21,34 @@ export class SignUp {
         this.passwordElement = document.getElementById('password');
         this.passwordConfirmElement = document.getElementById('password-confirm');
         this.commonErrorElement = document.getElementById('common-error');
+        this.passwordErrorElement = document.getElementById('password-error');
         this.passwordConfirmErrorElement = document.getElementById('password-confirm-error');
     }
 
-
-    validate() {
-        let isValid = true
-
-        if (this.nameElement.value) {
-            this.nameElement.classList.remove('is-invalid');
-        } else {
-            this.nameElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        if (this.lastNameElement.value) {
-            this.lastNameElement.classList.remove('is-invalid');
-        } else {
-            this.lastNameElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        if (this.emailElement.value && this.emailElement.value.match(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)) {
-            this.emailElement.classList.remove('is-invalid');
-        } else {
-            this.emailElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        if (this.passwordElement.value) {
-            this.passwordElement.classList.remove('is-invalid');
-        } else {
-            this.passwordElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        if (!this.passwordConfirmElement.value) {
-            this.passwordConfirmElement.classList.add('is-invalid');
-            this.passwordConfirmErrorElement.innerText = 'Введите подтверждение пароля';
-            isValid = false;
-        } else if (this.passwordConfirmElement.value !== this.passwordElement.value) {
-            this.passwordConfirmElement.classList.add('is-invalid');
-            this.passwordConfirmErrorElement.innerText = 'Пароль и подтверждение не совпадают';
-            isValid = false;
-        } else {
-            this.passwordConfirmElement.classList.remove('is-invalid');
-        }
-
-        return isValid;
+    setValidations () {
+        this.validations = [
+            {element: this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
+            {element: this.nameElement},
+            {element: this.lastNameElement},
+            {
+                element: this.passwordElement,
+                password: true,
+                options: {pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{6,}$/},
+                errorElement: this.passwordErrorElement,
+                wrongPatternText: 'Пароль должен быть не менее 6 символов и содержать цифру, латинскую букву в верхнем и нижнем регистре'
+            },
+            {
+                element: this.passwordConfirmElement,
+                confirmPassword: true,
+                options: {compareTo: this.passwordElement},
+                errorElement: this.passwordConfirmErrorElement,
+                wrongPatternText: 'Пароль и подтверждение не совпадают'
+            },
+        ]
     }
 
     async signUp() {
         this.commonErrorElement.style.display = 'none';
-        // if (this.validate()) {
         if (ValidationUtils.validateForm(this.validations)) {
             const signUpResult = await AuthService.signUp({
                 name: this.nameElement.value,
@@ -104,7 +71,6 @@ export class SignUp {
                 this.commonErrorElement.innerText = signUpResult.errorMessage;
             }
         }
-
     }
 }
 
