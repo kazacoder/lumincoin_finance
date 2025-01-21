@@ -20,6 +20,7 @@ class Operation {
             this.period = this.params.get('period');
         }
         this.cancelButton.href = `/balance?period=${this.period}`;
+        this.dateInputElement.value = new Date().toISOString().slice(0, 10);
     }
 
     async getCategories(type) {

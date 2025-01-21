@@ -1,15 +1,36 @@
 import {HttpUtils} from "../utils/http-utils";
+import {OperationsService} from "../services/operations-service";
+
+export function periodSelectButtonsProcessing () {
+    const today = new Date();
+    this.periodBarElementsArray.forEach(element => {
+        element.classList.remove('btn-secondary');
+        element.classList.add('btn-outline-secondary');
+        if (element.id === this.period) {
+            element.classList.add('btn-secondary');
+            element.classList.remove('btn-outline-secondary');
+        }
+        if (this.period === 'interval') {
+            this.IntervalDurationDivElement.classList.remove('d-none');
+            this.IntervalDurationDivElement.classList.add('d-flex');
+            this.dateFromElement.disabled = false;
+            this.dateToElement.disabled = false;
+            this.dateFromElement.value = (new Date(today.getFullYear(), 0, 2)).toISOString().slice(0, 10);
+            this.dateToElement.value = (new Date(today.getFullYear(), today.getMonth() + 1, 1)).toISOString().slice(0, 10);
+        }
+    })
+}
 
 export class MainPage {
-    constructor(openNewRoute) {
-        this.openNewRoute = openNewRoute;
+    constructor() {
         this.period = 'today'
         this.totalIncomesSpanElement = document.getElementById("total-incomes");
         this.totalExpensesSpanElement = document.getElementById("total-expenses");
-        this.periodElementsCollection = document.querySelectorAll('.period-selection a');
+        this.periodBarElementsArray = document.querySelectorAll('.period-selection a');
         this.IntervalDurationDivElement = document.getElementById('interval-duration');
         this.dateFromElement = document.getElementById('dateFrom');
         this.dateToElement = document.getElementById('dateTo');
+        this.getOperations = OperationsService.getOperations;
         this.init().then();
     }
 
@@ -17,55 +38,19 @@ export class MainPage {
 
         let currentPeriod = new URLSearchParams(location.search).get('period');
         this.period = currentPeriod ? currentPeriod : 'today';
-
-        this.periodSelectButtonsProcessing();
-
-        const balance = await this.getBalance();
-        this.loadCharts(balance).then();
-
+        periodSelectButtonsProcessing.call(this);
+        const operations = await this.getOperations(this.period, this.dateFromElement, this.dateToElement);
+        this.loadCharts(operations).then();
         this.dateFromElement.addEventListener('change', this.intervalChangedEventListenerFunc.bind(this));
         this.dateToElement.addEventListener('change', this.intervalChangedEventListenerFunc.bind(this));
-    }
-
-    periodSelectButtonsProcessing () {
-        const today = new Date();
-        this.periodElementsCollection.forEach(element => {
-            element.classList.remove('btn-secondary');
-            element.classList.add('btn-outline-secondary');
-            if (element.id === this.period) {
-                element.classList.add('btn-secondary');
-                element.classList.remove('btn-outline-secondary');
-            }
-            if (this.period === 'interval') {
-                this.IntervalDurationDivElement.classList.remove('d-none');
-                this.IntervalDurationDivElement.classList.add('d-flex');
-                this.dateFromElement.disabled = false;
-                this.dateToElement.disabled = false;
-                this.dateFromElement.value = (new Date(today.getFullYear(), 0, 2)).toISOString().slice(0, 10);
-                this.dateToElement.value = (new Date(today.getFullYear(), today.getMonth() + 1, 1)).toISOString().slice(0, 10);
-            }
-        })
     }
 
     async intervalChangedEventListenerFunc () {
         this.incomesChart.destroy()
         this.expensesChart.destroy()
-        const balance = await this.getBalance();
+        const balance = await this.getOperations(this.period, this.dateFromElement, this.dateToElement);
         this.loadCharts(balance).then();
     }
-
-    async getBalance() {
-        let params = `?period=${this.period}`
-        if (this.period === 'interval') {
-            params += `&dateFrom=${this.dateFromElement.value}&dateTo=${this.dateToElement.value}`;
-        } else if (this.period === 'today') {
-            const today = new Date().toISOString().slice(0, 10);
-            params = `?period=interval&dateFrom=${today}&dateTo=${today}`;
-        }
-        const result = await HttpUtils.request(`/operations${params}`, 'GET');
-        return result.response
-    }
-
 
     async getCategoryAggregation(data, type) {
         const categoriesRequestResult = await HttpUtils.request(`/categories/${type}`, 'GET');
@@ -88,9 +73,9 @@ export class MainPage {
         }
     }
 
-    async loadCharts(balance) {
-        const incomes = await this.getCategoryAggregation(balance.filter(element => element.type === 'income'), 'income');
-        const expenses = await this.getCategoryAggregation(balance.filter(element => element.type === 'expense'), 'expense');
+    async loadCharts(operations) {
+        const incomes = await this.getCategoryAggregation(operations.filter(element => element.type === 'income'), 'income');
+        const expenses = await this.getCategoryAggregation(operations.filter(element => element.type === 'expense'), 'expense');
         const incomesCanvasElement = document.getElementById('incomes-chart');
         const expensesCanvasElement = document.getElementById('expenses-chart');
 

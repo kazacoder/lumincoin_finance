@@ -1,63 +1,39 @@
 import {HttpUtils} from "../../utils/http-utils";
 import {BalanceService} from "../../services/balance-service";
+import {OperationsService} from "../../services/operations-service";
+import {periodSelectButtonsProcessing} from "../main-page";
 
 export class Balance {
     constructor() {
-        this.periods = document.querySelectorAll('.period-selection a');
+        this.periodBarElementsArray = document.querySelectorAll('.period-selection a');
         this.dateFromElement = document.getElementById('dateFrom');
         this.dateToElement = document.getElementById('dateTo');
         this.IntervalDurationDivElement = document.getElementById('interval-duration');
         this.createIncomeButton = document.getElementById("create-income");
         this.createExpenseButton = document.getElementById("create-expense");
         this.tableBody = document.getElementById('records');
+        this.getOperations = OperationsService.getOperations;
         this.init();
-        this.getBalance().then();
+        this.getOperations(this.period, this.dateFromElement, this.dateToElement)
+            .then(operations => {this.loadBalance(operations);});
     }
 
-    init() {
-        const today = new Date();
+     init() {
         const currentPeriod = new URLSearchParams(location.search).get('period');
         this.createIncomeButton.href += `&period=${currentPeriod}`;
         this.createExpenseButton.href += `&period=${currentPeriod}`;
-        this.periods.forEach(period => {
-            period.classList.remove('btn-secondary');
-            period.classList.add('btn-outline-secondary');
-            if (period.id === currentPeriod) {
-                period.classList.add('btn-secondary');
-                period.classList.remove('btn-outline-secondary');
-            }
-            if (currentPeriod === 'interval') {
-                this.IntervalDurationDivElement.classList.remove('d-none');
-                this.IntervalDurationDivElement.classList.add('d-flex');
-                this.dateFromElement.disabled = false;
-                this.dateToElement.disabled = false;
-                this.dateFromElement.value = (new Date(today.getFullYear(), 0, 2)).toISOString().slice(0, 10);
-                this.dateToElement.value = (new Date(today.getFullYear(), today.getMonth() + 1, 1)).toISOString().slice(0, 10);
-            }
-        })
+        this.period = new URLSearchParams(location.search).get('period');
+        periodSelectButtonsProcessing.call(this);
         this.dateFromElement.addEventListener('change', () => {
             this.tableBody.innerHTML = '';
-            this.getBalance().then()
+            this.getOperations(this.period, this.dateFromElement, this.dateToElement)
+                .then(operations => {this.loadBalance(operations);})
         })
         this.dateToElement.addEventListener('change', () => {
             this.tableBody.innerHTML = '';
-            this.getBalance().then()
+            this.getOperations(this.period, this.dateFromElement, this.dateToElement)
+                .then(operations => {this.loadBalance(operations);})
         })
-    }
-
-    async getBalance() {
-        this.period = new URLSearchParams(location.search).get('period');
-
-        let params = `?period=${this.period}`
-        if (this.period === 'interval') {
-
-            params += `&dateFrom=${this.dateFromElement.value}&dateTo=${this.dateToElement.value}`;
-        } else if (this.period === 'today') {
-            const today = new Date().toISOString().slice(0, 10);
-            params = `?period=interval&dateFrom=${today}&dateTo=${today}`;
-        }
-        const result = await HttpUtils.request(`/operations${params}`, 'GET');
-        this.loadBalance(result.response);
     }
 
     loadBalance(operations) {
@@ -107,9 +83,10 @@ export class Balance {
                     const operationId = btn.getAttribute('operation-id');
                     modal.hide()
                     btn.parentElement.parentElement.parentElement.remove();
-                    HttpUtils.request(`/operations/${operationId}`, 'DELETE').then()
-                    BalanceService.getBalance().then((balance) => {
-                        document.getElementById('balance').innerText = `${parseInt(balance).toLocaleString()} $`
+                    HttpUtils.request(`/operations/${operationId}`, 'DELETE').then(() => {
+                        BalanceService.getBalance().then((balance) => {
+                            document.getElementById('balance').innerText = `${parseInt(balance).toLocaleString()} $`
+                        })
                     })
                 })
             })
