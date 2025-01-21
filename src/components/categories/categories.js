@@ -1,8 +1,7 @@
 import {HttpUtils} from "../../utils/http-utils";
 
 export class Categories {
-    constructor(openNewRoute, type) {
-        this.openNewRoute = openNewRoute;
+    constructor(type) {
         this.types = {
             income: {title: 'Доходы'},
             expense: {title: 'Расходы'},

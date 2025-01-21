@@ -4,8 +4,8 @@ import {Login} from "./components/auth/login";
 import {SignUp} from "./components/auth/sign-up";
 import {Categories} from "./components/categories/categories";
 import {NotFoundError} from "./components/404";
-import {OperationCreate} from "./components/balance/operation-create";
-import {OperationEdit} from "./components/balance/operation-edit";
+import {OperationCreate} from "./components/balance/operation";
+import {OperationEdit} from "./components/balance/operation";
 import {Category} from "./components/categories/category";
 import {Logout} from "./components/auth/logout";
 import {AuthUtils} from "./utils/auth-utils";
@@ -82,7 +82,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
-                    new Balance(this.openNewRoute.bind(this));
+                    new Balance();
                 },
                 styles: [],
                 scripts: [],
@@ -96,7 +96,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
-                    new Categories(this.openNewRoute.bind(this), 'income');
+                    new Categories('income');
                 },
                 styles: [],
                 scripts: [],
@@ -110,7 +110,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
-                    new Categories(this.openNewRoute.bind(this), 'expense');
+                    new Categories('expense');
                 },
                 styles: [],
                 scripts: [],
@@ -336,8 +336,6 @@ export class Router {
         }
     }
 
-
-    //TODO move to utils
     loadPageScript(src) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');

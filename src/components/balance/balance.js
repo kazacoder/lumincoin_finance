@@ -1,8 +1,8 @@
 import {HttpUtils} from "../../utils/http-utils";
+import {BalanceService} from "../../services/balance-service";
 
 export class Balance {
-    constructor(openNewRoute) {
-        this.openNewRoute = openNewRoute;
+    constructor() {
         this.periods = document.querySelectorAll('.period-selection a');
         this.dateFromElement = document.getElementById('dateFrom');
         this.dateToElement = document.getElementById('dateTo');
@@ -108,6 +108,9 @@ export class Balance {
                     modal.hide()
                     btn.parentElement.parentElement.parentElement.remove();
                     HttpUtils.request(`/operations/${operationId}`, 'DELETE').then()
+                    BalanceService.getBalance().then((balance) => {
+                        document.getElementById('balance').innerText = `${parseInt(balance).toLocaleString()} $`
+                    })
                 })
             })
         })
