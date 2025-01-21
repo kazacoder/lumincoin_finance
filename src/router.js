@@ -3,13 +3,10 @@ import {Balance} from "./components/balance/balance";
 import {Login} from "./components/auth/login";
 import {SignUp} from "./components/auth/sign-up";
 import {Categories} from "./components/categories/categories";
-import {IncomeEdit} from "./components/categories/income-edit";
 import {NotFoundError} from "./components/404";
 import {OperationCreate} from "./components/balance/operation-create";
 import {OperationEdit} from "./components/balance/operation-edit";
-import {IncomeCreate} from "./components/categories/income-create";
-import {ExpenseEdit} from "./components/categories/expense-edit";
-import {ExpenseCreate} from "./components/categories/expense-create";
+import {Category} from "./components/categories/category";
 import {Logout} from "./components/auth/logout";
 import {AuthUtils} from "./utils/auth-utils";
 import {BalanceService} from "./services/balance-service";
@@ -127,7 +124,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: [],
                 load: () => {
-                    new IncomeEdit(this.openNewRoute.bind(this));
+                    new Category(this.openNewRoute.bind(this), 'income', 'edit');
                 },
                 styles: [],
                 scripts: [],
@@ -141,7 +138,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: [],
                 load: () => {
-                    new IncomeCreate(this.openNewRoute.bind(this));
+                    new Category(this.openNewRoute.bind(this), 'income', 'create');
                 },
                 styles: [],
                 scripts: [],
@@ -155,7 +152,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: [],
                 load: () => {
-                    new ExpenseEdit(this.openNewRoute.bind(this));
+                    new Category(this.openNewRoute.bind(this), 'expense', 'edit');
                 },
                 styles: [],
                 scripts: [],
@@ -169,7 +166,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: [],
                 load: () => {
-                    new ExpenseCreate(this.openNewRoute.bind(this));
+                    new Category(this.openNewRoute.bind(this), 'expense', 'create');
                 },
                 styles: [],
                 scripts: [],
