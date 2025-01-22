@@ -1,4 +1,6 @@
 import {HttpUtils} from "../../utils/http-utils";
+import {OperationsService} from "../../services/operations-service";
+import {BalanceService} from "../../services/balance-service";
 
 export class Categories {
     constructor(type) {
@@ -49,17 +51,29 @@ export class Categories {
                 const confirmRemoveButton = document.getElementById('confirm-remove')
                 const cloneBtn = confirmRemoveButton.cloneNode(true)
                 confirmRemoveButton.parentNode.replaceChild(cloneBtn, confirmRemoveButton);
-                cloneBtn.addEventListener('click', () => {
-                    modal.hide()
-                    const catId = btn.parentElement.previousElementSibling.id
-                    HttpUtils.request(`/categories/${this.type}/${catId}`, 'DELETE').then(() => {
-                        this.clearCategoriesList()
-                        this.getCategories().then();
-                    })
-                })
-
+                cloneBtn.addEventListener('click', this.removeButtonEventListener.bind(this, btn, modal))
             })
         })
+    }
+
+    async removeButtonEventListener(btn, modal) {
+            modal.hide()
+            const catId = btn.parentElement.previousElementSibling.id
+            const catTitle = btn.parentElement.previousElementSibling.innerHTML
+
+            const operations = await OperationsService.getOperations('all')
+            const removingOperations = operations.filter(operation => operation.category === catTitle && operation.type === this.type)
+            removingOperations.forEach(operation => {
+                HttpUtils.request(`/operations/${operation.id}`, 'DELETE').then();
+            })
+
+            HttpUtils.request(`/categories/${this.type}/${catId}`, 'DELETE').then(() => {
+                this.clearCategoriesList()
+                this.getCategories().then();
+                BalanceService.getBalance().then((balance) => {
+                    document.getElementById('balance').innerText = `${parseInt(balance).toLocaleString()} $`
+                })
+            })
     }
 
     clearCategoriesList() {

@@ -139,6 +139,7 @@ export class OperationEdit extends Operation {
             }
         })
         this.cancelButton.href = `/balance?period=${this.period}`
+        this.typeSelectElement.disabled = true;
     }
 
     async loadCurrentOperation(id) {
