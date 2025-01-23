@@ -45,7 +45,8 @@ export class AuthUtils {
                 }),
             });
             if (response && response.status === 200) {
-                const tokens = await response.json();
+                const responseJson = await response.json();
+                const tokens = responseJson.tokens;
                 if (tokens && !tokens.error) {
                     this.setAuthInfo(tokens.accessToken, tokens.refreshToken);
                     result = true;

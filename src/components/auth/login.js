@@ -1,18 +1,13 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
-import {BalanceService} from "../../services/balance-service";
+import {ValidationUtils} from "../../utils/validation-utils";
 
 export class Login {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
-        // if (AuthUtils.getAuthInfo(AuthUtils.accessTokenKey)) {
-        //     return this.openNewRoute('/')
-        // }
-
-        this.findElements()
-
+        this.findElements();
+        this.setValidations();
         document.getElementById("login").addEventListener("click", this.login.bind(this));
-
     }
 
     findElements() {
@@ -20,33 +15,38 @@ export class Login {
         this.passwordElement = document.getElementById('password');
         this.rememberMeElement = document.getElementById('remember');
         this.commonErrorElement = document.getElementById('common-error');
+        this.passwordErrorElement = document.getElementById('password-error');
+    }
+
+    setValidations () {
+        this.validations = [
+            {
+                element: this.passwordElement,
+                password: true,
+                options: {pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{6,}$/},
+                errorElement: this.passwordErrorElement,
+                wrongPatternText: 'Пароль должен быть не менее 6 символов и содержать цифру, латинскую букву в верхнем и нижнем регистре'
+            },
+            {element: this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
+        ]
     }
 
     async login() {
         this.commonErrorElement.style.display = 'none';
-        if (this.validate()) {
-            const  loginResult = await AuthService.logIn({
+        if (ValidationUtils.validateForm(this.validations)) {
+            const loginResult = await AuthService.logIn({
                 email: this.emailElement.value,
                 password: this.passwordElement.value,
                 rememberMe: this.rememberMeElement.checked,
             })
 
             if (loginResult && loginResult.user) {
-                if (this.rememberMeElement.checked) {
-                    AuthUtils.setAuthInfo(loginResult.tokens.accessToken, loginResult.tokens.refreshToken,{
-                        id: loginResult.user.id,
-                        name: loginResult.user.name,
-                        lastName: loginResult.user.lastName,
-                    });
-                } else {
-                    //TODO очистить localStorage, сохранить в sessionStorage
-                    AuthUtils.setAuthInfo(loginResult.tokens.accessToken, loginResult.tokens.refreshToken,{
-                        id: loginResult.user.id,
-                        name: loginResult.user.name,
-                        lastName: loginResult.user.lastName,
-                    });
-                }
-                await BalanceService.saveBalanceToStorage()
+                AuthUtils.setAuthInfo(loginResult.tokens.accessToken, loginResult.tokens.refreshToken, {
+                    id: loginResult.user.id,
+                    name: loginResult.user.name,
+                    lastName: loginResult.user.lastName,
+                });
+
                 return this.openNewRoute('/')
             }
             this.commonErrorElement.style.display = 'block';
@@ -54,25 +54,6 @@ export class Login {
                 this.commonErrorElement.innerText = loginResult.errorMessage;
             }
         }
-
-    }
-
-    //TODO перенести в утилиты
-    validate() {
-        let isValid = true
-        if (this.emailElement.value && this.emailElement.value.match(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)) {
-            this.emailElement.classList.remove('is-invalid');
-        } else {
-            this.emailElement.classList.add('is-invalid');
-            isValid = false;
-        }
-        if (this.passwordElement.value) {
-            this.passwordElement.classList.remove('is-invalid');
-        } else {
-            this.passwordElement.classList.add('is-invalid');
-            isValid = false;
-        }
-        return isValid;
 
     }
 }

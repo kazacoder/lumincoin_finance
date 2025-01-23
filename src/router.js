@@ -1,16 +1,12 @@
 import {MainPage} from "./components/main-page";
-import {Balance} from "./components/balance";
+import {Balance} from "./components/balance/balance";
 import {Login} from "./components/auth/login";
 import {SignUp} from "./components/auth/sign-up";
-import {CategoriesExpense} from "./components/categories-expense";
-import {CategoriesIncome} from "./components/categories-income";
-import {IncomeEdit} from "./components/income-edit";
+import {Categories} from "./components/categories/categories";
 import {NotFoundError} from "./components/404";
-import {OperationCreate} from "./components/operation-create";
-import {OperationEdit} from "./components/operation-edit";
-import {IncomeCreate} from "./components/income-create";
-import {ExpenseEdit} from "./components/expense-edit";
-import {ExpenseCreate} from "./components/expense-create";
+import {OperationCreate} from "./components/balance/operation";
+import {OperationEdit} from "./components/balance/operation";
+import {Category} from "./components/categories/category";
 import {Logout} from "./components/auth/logout";
 import {AuthUtils} from "./utils/auth-utils";
 import {BalanceService} from "./services/balance-service";
@@ -22,7 +18,6 @@ export class Router {
         this.contentPageElement = document.getElementById('content');
         this.historyBackLink = null;
         this.userName = null
-        console.log(window.location.pathname)
 
         this.routes = {
             '/': {
@@ -30,7 +25,7 @@ export class Router {
                 filePathTemplate: '/templates/pages/main.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new MainPage()
+                    new MainPage();
                 },
                 styles: [],
                 scripts: ['chart.umd.js'],
@@ -87,7 +82,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
-                    new Balance(this.openNewRoute.bind(this));
+                    new Balance();
                 },
                 styles: [],
                 scripts: [],
@@ -97,11 +92,11 @@ export class Router {
             },
             '/categories/income': {
                 title: 'Категории доходов',
-                filePathTemplate: '/templates/pages/categories/categories-income.html',
+                filePathTemplate: '/templates/pages/categories/categories-list.html',
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
-                    new CategoriesIncome(this.openNewRoute.bind(this));
+                    new Categories('income');
                 },
                 styles: [],
                 scripts: [],
@@ -111,11 +106,11 @@ export class Router {
             },
             '/categories/expense': {
                 title: 'Категории расходов',
-                filePathTemplate: '/templates/pages/categories/categories-expense.html',
+                filePathTemplate: '/templates/pages/categories/categories-list.html',
                 useLayout: '/templates/layout.html',
                 includes: ['/templates/includes/delete-modal.html'],
                 load: () => {
-                    new CategoriesExpense(this.openNewRoute.bind(this));
+                    new Categories('expense');
                 },
                 styles: [],
                 scripts: [],
@@ -129,7 +124,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: [],
                 load: () => {
-                    new IncomeEdit(this.openNewRoute.bind(this));
+                    new Category(this.openNewRoute.bind(this), 'income', 'edit');
                 },
                 styles: [],
                 scripts: [],
@@ -143,7 +138,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: [],
                 load: () => {
-                    new IncomeCreate(this.openNewRoute.bind(this));
+                    new Category(this.openNewRoute.bind(this), 'income', 'create');
                 },
                 styles: [],
                 scripts: [],
@@ -157,7 +152,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: [],
                 load: () => {
-                    new ExpenseEdit(this.openNewRoute.bind(this));
+                    new Category(this.openNewRoute.bind(this), 'expense', 'edit');
                 },
                 styles: [],
                 scripts: [],
@@ -171,7 +166,7 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 includes: [],
                 load: () => {
-                    new ExpenseCreate(this.openNewRoute.bind(this));
+                    new Category(this.openNewRoute.bind(this), 'expense', 'create');
                 },
                 styles: [],
                 scripts: [],
@@ -312,10 +307,12 @@ export class Router {
                     }
                     this.profileNameElement.innerText = this.userName;
 
-                    document.getElementById('balance').innerText = `${parseInt(BalanceService.gerUserBalance()).toLocaleString()} $`
+                    const balance = await BalanceService.getBalance()
+                    document.getElementById('balance').innerText = `${parseInt(balance).toLocaleString()} $`
 
                 }
                 contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(res => res.text());
+                document.body.removeAttribute('style');
             }
 
             if (newRoute.scripts && newRoute.scripts.length > 0) {
@@ -339,8 +336,6 @@ export class Router {
         }
     }
 
-
-    //TODO move to utils
     loadPageScript(src) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -362,7 +357,8 @@ export class Router {
         const menuItem = document.querySelectorAll('.sidebar .nav-link');
         menuItem.forEach(item => {
             const href = item.getAttribute('href');
-            if (route.includes(href) && '/' !== href || (route === '/' && href === '/')) {
+            const cleanedHref = href ? href.replace(/\?.+/gm, '') : href;
+            if (route.includes(cleanedHref) && '/' !== cleanedHref || (route === '/' && cleanedHref === '/')) {
                 item.classList.add('active');
             } else item.classList.remove('active')
 
