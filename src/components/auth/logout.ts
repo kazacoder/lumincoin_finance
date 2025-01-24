@@ -1,6 +1,5 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
-import {BalanceService} from "../../services/balance-service";
 
 export class Logout {
     constructor(openNewRoute) {
