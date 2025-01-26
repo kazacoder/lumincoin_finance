@@ -29,4 +29,34 @@ export type UserInfoType = {
     lastName: string,
 }
 
+export interface LoginType {
+    email: string,
+    password: string,
+    rememberMe?: boolean,
+}
 
+export interface SignUpType extends LoginType{
+    name: string,
+    lastName: string,
+    passwordRepeat: boolean,
+}
+
+export type LogOutType = {
+    refreshToken: string,
+}
+
+export type CommonErrorType = {
+    errorMessage: string,
+}
+
+export type LoginResponseType = {
+    tokens: {
+        accessToken: string,
+        refreshToken: string
+    },
+    user: {
+        name: string,
+        lastName: string,
+        id: number,
+    },
+}

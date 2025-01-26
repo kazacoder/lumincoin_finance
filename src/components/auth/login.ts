@@ -1,6 +1,7 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
 import {ValidationUtils} from "../../utils/validation-utils";
+import {LoginType} from "../types/types";
 
 export class Login {
     constructor(openNewRoute) {
@@ -34,7 +35,7 @@ export class Login {
     async login() {
         this.commonErrorElement.style.display = 'none';
         if (ValidationUtils.validateForm(this.validations)) {
-            const loginResult = await AuthService.logIn({
+            const loginResult: LoginType = await AuthService.logIn({
                 email: this.emailElement.value,
                 password: this.passwordElement.value,
                 rememberMe: this.rememberMeElement.checked,
