@@ -1,8 +1,18 @@
 import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
+import {OpenNewRouteInterface} from "../types/interfaces";
 
 class Operation {
-    constructor(openNewRoute) {
+    private categorySelectElement: HTMLElement | null;
+    private typeSelectElement: HTMLElement | null;
+    private period: string;
+    private openNewRoute: OpenNewRouteInterface;
+    readonly categoryObject: {};
+    private params: URLSearchParams | null = null;
+    private cancelButton: HTMLLinkElement | null = null;
+    private dateInputElement: HTMLInputElement | null = null;
+
+    constructor(openNewRoute: OpenNewRouteInterface) {
         this.categorySelectElement = null;
         this.typeSelectElement = null;
         this.period = 'today';
@@ -11,22 +21,24 @@ class Operation {
         this.init().then();
     }
 
-    async init() {
+    async init(): Promise<void> {
         this.findElements();
         this.setValidations();
         this.setTypeSelectElementEventListener().then();
         this.params = new URLSearchParams(window.location.search);
-        if (this.params.get('period')) {
-            this.period = this.params.get('period');
+        const paramsPeriod = this.params.get('period')
+        if (paramsPeriod) {
+            this.period = paramsPeriod;
         }
-        this.cancelButton.href = `/balance?period=${this.period}`;
-        this.dateInputElement.value = new Date().toISOString().slice(0, 10);
+        this.cancelButton ? this.cancelButton.href = `/balance?period=${this.period}` : null;
+        this.dateInputElement ? this.dateInputElement.value = new Date().toISOString().slice(0, 10): null;
     }
 
     async getCategories(type) {
         const result = await HttpUtils.request('/categories/' + type, 'GET');
         return result.response;
     }
+
     findElements() {
         this.categorySelectElement = document.getElementById("category");
         this.typeSelectElement = document.getElementById('type');

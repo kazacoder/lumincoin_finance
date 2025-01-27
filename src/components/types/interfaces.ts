@@ -17,3 +17,7 @@ export interface GetOperationParamInterface {
      dateFromElement?: (HTMLInputElement | null),
      dateToElement?: (HTMLInputElement | null)): Promise<Array<OperationType>>,
 }
+
+export interface OpenNewRouteInterface {
+    (url: string): Promise<void>;
+}
