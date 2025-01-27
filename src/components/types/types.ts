@@ -4,19 +4,19 @@ export type RouteTypes = {
 
 export type RouteType = {
     title?: string,
-        filePathTemplate?: string,
-        useLayout: string | null,
-        includes?: string[],
-        load(): void,
-        styles?: string[],
-        scripts?: string[],
-        unload?(): void,
+    filePathTemplate?: string,
+    useLayout: string | null,
+    includes?: string[],
+    load(): void,
+    styles?: string[],
+    scripts?: string[],
+    unload?(): void,
 }
 
 export enum AuthUtilsKeys {
-    accessTokenKey= 'accessToken',
-    refreshTokenKey= 'refreshToken',
-    userInfoTokenKey= 'userInfo',
+    accessTokenKey = 'accessToken',
+    refreshTokenKey = 'refreshToken',
+    userInfoTokenKey = 'userInfo',
 }
 
 export type AuthInfoType = {
@@ -29,17 +29,6 @@ export type UserInfoType = {
     lastName: string,
 }
 
-export interface LoginType {
-    email: string,
-    password: string,
-    rememberMe?: boolean,
-}
-
-export interface SignUpType extends LoginType{
-    name: string,
-    lastName: string,
-    passwordRepeat: boolean,
-}
 
 export type LogOutType = {
     refreshToken: string,
@@ -60,3 +49,26 @@ export type LoginResponseType = {
         id: number,
     },
 }
+
+export type OperationType = {
+    id: number,
+    type: string,
+    amount: number,
+    date: string,
+    comment: string,
+    category: string,
+}
+
+export type CategoryKindType = "income" | "expense"
+
+export type CategoryResponseType = {
+    id: number,
+    title: string,
+}
+
+export type AggregatedDataType = {
+    labels: string[],
+    amounts: number[],
+    total: number,
+}
+

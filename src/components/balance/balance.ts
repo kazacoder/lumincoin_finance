@@ -2,12 +2,24 @@ import {HttpUtils} from "../../utils/http-utils";
 import {BalanceService} from "../../services/balance-service";
 import {OperationsService} from "../../services/operations-service";
 import {periodSelectButtonsProcessing} from "../main-page";
+import {GetOperationParamInterface} from "../types/interfaces";
 
 export class Balance {
+    public periodBarElementsArray: NodeListOf<HTMLElement>;
+    public dateFromElement: HTMLInputElement | null;
+    public dateToElement: HTMLInputElement | null;
+    public IntervalDurationDivElement: HTMLElement | null;
+    private createIncomeButton: HTMLElement | null;
+    private createExpenseButton: HTMLElement | null;
+    private tableBody: HTMLElement | null;
+    private getOperations: GetOperationParamInterface
+    public period: string;
+
     constructor() {
+        this.period = 'today';
         this.periodBarElementsArray = document.querySelectorAll('.period-selection a');
-        this.dateFromElement = document.getElementById('dateFrom');
-        this.dateToElement = document.getElementById('dateTo');
+        this.dateFromElement = document.getElementById('dateFrom') as HTMLInputElement;
+        this.dateToElement = document.getElementById('dateTo') as HTMLInputElement;
         this.IntervalDurationDivElement = document.getElementById('interval-duration');
         this.createIncomeButton = document.getElementById("create-income");
         this.createExpenseButton = document.getElementById("create-expense");

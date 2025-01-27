@@ -1,5 +1,6 @@
 import {HttpUtils} from "../utils/http-utils";
-import {CommonErrorType, LoginResponseType, LoginType, LogOutType, SignUpType} from "../components/types/types";
+import {CommonErrorType, LoginResponseType, LogOutType} from "../components/types/types";
+import {LoginType, SignUpType} from "../components/types/interfaces";
 
 export class AuthService {
     public static async logIn(data: LoginType): Promise<LoginResponseType | CommonErrorType | null> {

@@ -1,8 +1,9 @@
 import {HttpUtils} from "../utils/http-utils";
+import {OperationType} from "../components/types/types";
 
 export class OperationsService {
-    public static async getOperations(period: string, dateFromElement: HTMLInputElement | null = null,
-                                      dateToElement: HTMLInputElement | null = null) {
+    public static async getOperations (period: string, dateFromElement: HTMLInputElement | null = null,
+                                      dateToElement: HTMLInputElement | null = null): Promise<Array<OperationType>> {
         let params: string = `?period=${period}`
         if (period === 'interval' && dateFromElement && dateToElement) {
             params += `&dateFrom=${dateFromElement.value}&dateTo=${dateToElement.value}`;

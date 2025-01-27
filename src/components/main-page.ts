@@ -1,16 +1,23 @@
 import {HttpUtils} from "../utils/http-utils";
 import {OperationsService} from "../services/operations-service";
+import {Balance} from "./balance/balance";
+import {AggregatedDataType, CategoryKindType, CategoryResponseType, OperationType} from "./types/types";
+import {Chart, registerables} from "chart.js";
+import {ChartConfiguration, ChartData, ChartItem} from "chart.js/dist/types";
+import {GetOperationParamInterface} from "./types/interfaces";
 
-export function periodSelectButtonsProcessing () {
-    const today = new Date();
-    this.periodBarElementsArray.forEach(element => {
+Chart.register(...registerables)
+
+export function periodSelectButtonsProcessing(this: MainPage | Balance): void {
+    const today: Date = new Date();
+    this.periodBarElementsArray.forEach((element: HTMLElement) => {
         element.classList.remove('btn-secondary');
         element.classList.add('btn-outline-secondary');
         if (element.id === this.period) {
             element.classList.add('btn-secondary');
             element.classList.remove('btn-outline-secondary');
         }
-        if (this.period === 'interval') {
+        if (this.period === 'interval' && this.dateFromElement && this.dateToElement && this.IntervalDurationDivElement) {
             this.IntervalDurationDivElement.classList.remove('d-none');
             this.IntervalDurationDivElement.classList.add('d-flex');
             this.dateFromElement.disabled = false;
@@ -22,49 +29,65 @@ export function periodSelectButtonsProcessing () {
 }
 
 export class MainPage {
+    public period: string;
+    readonly totalIncomesSpanElement: HTMLElement | null;
+    readonly totalExpensesSpanElement: HTMLElement | null;
+    public periodBarElementsArray: NodeListOf<HTMLElement>;
+    public IntervalDurationDivElement: HTMLElement | null;
+    public dateFromElement: HTMLInputElement | null;
+    public dateToElement: HTMLInputElement | null;
+    readonly getOperations: GetOperationParamInterface;
+    private incomesChart: any;
+    private expensesChart: any;
+
     constructor() {
-        this.period = 'today'
+        this.period = 'today';
         this.totalIncomesSpanElement = document.getElementById("total-incomes");
         this.totalExpensesSpanElement = document.getElementById("total-expenses");
         this.periodBarElementsArray = document.querySelectorAll('.period-selection a');
         this.IntervalDurationDivElement = document.getElementById('interval-duration');
-        this.dateFromElement = document.getElementById('dateFrom');
-        this.dateToElement = document.getElementById('dateTo');
+        this.dateFromElement = document.getElementById('dateFrom') as HTMLInputElement;
+        this.dateToElement = document.getElementById('dateTo') as HTMLInputElement;
         this.getOperations = OperationsService.getOperations;
         this.init().then();
     }
 
-    async init() {
+    private async init(): Promise<void> {
 
-        let currentPeriod = new URLSearchParams(location.search).get('period');
+        let currentPeriod: string | null = new URLSearchParams(location.search).get('period');
         this.period = currentPeriod ? currentPeriod : 'today';
         periodSelectButtonsProcessing.call(this);
-        const operations = await this.getOperations(this.period, this.dateFromElement, this.dateToElement);
+        const operations: Array<OperationType> = await this.getOperations(this.period, this.dateFromElement, this.dateToElement);
         this.loadCharts(operations).then();
-        this.dateFromElement.addEventListener('change', this.intervalChangedEventListenerFunc.bind(this));
-        this.dateToElement.addEventListener('change', this.intervalChangedEventListenerFunc.bind(this));
+        if (this.dateFromElement) {
+            this.dateFromElement.addEventListener('change', this.intervalChangedEventListenerFunc.bind(this));
+        }
+        if (this.dateToElement) {
+            this.dateToElement.addEventListener('change', this.intervalChangedEventListenerFunc.bind(this));
+        }
     }
 
-    async intervalChangedEventListenerFunc () {
+    async intervalChangedEventListenerFunc(): Promise<void> {
         this.incomesChart.destroy()
         this.expensesChart.destroy()
-        const balance = await this.getOperations(this.period, this.dateFromElement, this.dateToElement);
+        const balance: OperationType[] = await this.getOperations(this.period, this.dateFromElement, this.dateToElement);
         this.loadCharts(balance).then();
     }
 
-    async getCategoryAggregation(data, type) {
+    async getCategoryAggregation(data: OperationType[], type: CategoryKindType): Promise<AggregatedDataType> {
         const categoriesRequestResult = await HttpUtils.request(`/categories/${type}`, 'GET');
-        const categoriesObject = {};
-        categoriesRequestResult.response.forEach(element => categoriesObject[element.title] = element.id);
+        const categoriesObject: { [key: string]: number } = {};
+        categoriesRequestResult.response.forEach((element: CategoryResponseType) => categoriesObject[element.title] = element.id);
 
-        const total = data.reduce((acc, cur) => acc + cur.amount, 0)
-        const result = data.reduce((acc, cur) => {
-            acc[cur.category] = cur.amount + parseInt(acc[cur.category] || 0);
+        const total: number = data.reduce((acc: number, cur) => acc + cur.amount, 0)
+        const result: { [key: string]: number } = data.reduce((acc: { [key: string]: number }, cur) => {
+            acc[cur.category] = cur.amount + (acc[cur.category] || 0);
             return acc;
         }, {})
-        let resultArray = Object.keys(result).map(key => [key, result[key], categoriesObject[key]]);
 
-        resultArray.sort((a, b) => a[2] - b[2]);
+        let resultArray: [string, number, number][] = Object.keys(result).map(key => [key, result[key], categoriesObject[key]]);
+
+        resultArray.sort((a: [string, number, number], b: [string, number, number]) => a[2] - b[2]);
 
         return {
             labels: resultArray.map(item => item[0]),
@@ -73,14 +96,14 @@ export class MainPage {
         }
     }
 
-    async loadCharts(operations) {
-        const incomes = await this.getCategoryAggregation(operations.filter(element => element.type === 'income'), 'income');
-        const expenses = await this.getCategoryAggregation(operations.filter(element => element.type === 'expense'), 'expense');
-        const incomesCanvasElement = document.getElementById('incomes-chart');
-        const expensesCanvasElement = document.getElementById('expenses-chart');
+    async loadCharts(operations: OperationType[]) {
+        const incomes: AggregatedDataType = await this.getCategoryAggregation(operations.filter(element => element.type === 'income'), 'income');
+        const expenses: AggregatedDataType = await this.getCategoryAggregation(operations.filter(element => element.type === 'expense'), 'expense');
+        const incomesCanvasElement = document.getElementById('incomes-chart') as ChartItem;
+        const expensesCanvasElement = document.getElementById('expenses-chart') as ChartItem;
 
 
-        const CHART_COLORS = {
+        const CHART_COLORS: { [key: string]: string } = {
             red: '#DC3545',
             orange: '#FD7E14',
             yellow: '#FFC107',
@@ -93,18 +116,17 @@ export class MainPage {
         };
 
         // adding colors to CHART_COLORS pallet
-        const numberOfColors = Math.max(incomes.amounts.length, expenses.amounts.length) - 9;
+        const numberOfColors: number = Math.max(incomes.amounts.length, expenses.amounts.length) - 9;
 
         for (let i = 0; i < numberOfColors; i++) {
-            console.log(i)
             CHART_COLORS['color' + i] = `rgb(${rand(0, 255)}, ${rand(0, 255)}, ${rand(0, 255)})`;
         }
 
-        function rand(frm, to) {
+        function rand(frm: number, to: number): number {
             return ~~(Math.random() * (to - frm)) + frm;
         }
 
-        const incomesData = {
+        const incomesData: ChartData<"pie"> = {
             labels: incomes.labels,
             datasets: [
                 {
@@ -115,7 +137,7 @@ export class MainPage {
             ]
         };
 
-        const expensesData = {
+        const expensesData: ChartData<"pie"> = {
             labels: expenses.labels,
             datasets: [
                 {
@@ -126,7 +148,7 @@ export class MainPage {
             ],
         };
 
-        const incomesConfig = {
+        const incomesConfig: ChartConfiguration<"pie"> = {
             type: 'pie',
             data: incomesData,
             options: {
@@ -144,7 +166,7 @@ export class MainPage {
             },
         };
 
-        const expensesConfig = {
+        const expensesConfig: ChartConfiguration<"pie"> = {
             type: 'pie',
             data: expensesData,
             options: {
@@ -162,12 +184,13 @@ export class MainPage {
             },
         };
 
-        this.totalIncomesSpanElement.innerText = incomes.total.toLocaleString() + ' $'
-        this.totalExpensesSpanElement.innerText = expenses.total.toLocaleString() + ' $'
+        if (this.totalIncomesSpanElement) {
+            this.totalIncomesSpanElement.innerText = incomes.total.toLocaleString() + ' $'
+        }
+        if (this.totalExpensesSpanElement) {
+            this.totalExpensesSpanElement.innerText = expenses.total.toLocaleString() + ' $'
+        }
         this.incomesChart = new Chart(incomesCanvasElement, incomesConfig);
         this.expensesChart = new Chart(expensesCanvasElement, expensesConfig);
     }
 }
-
-
-
