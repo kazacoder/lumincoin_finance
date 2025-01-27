@@ -3,17 +3,19 @@ import {BalanceService} from "../../services/balance-service";
 import {OperationsService} from "../../services/operations-service";
 import {periodSelectButtonsProcessing} from "../main-page";
 import {GetOperationParamInterface} from "../types/interfaces";
+import {OperationType} from "../types/types";
 
 export class Balance {
     public periodBarElementsArray: NodeListOf<HTMLElement>;
     public dateFromElement: HTMLInputElement | null;
     public dateToElement: HTMLInputElement | null;
     public IntervalDurationDivElement: HTMLElement | null;
-    private createIncomeButton: HTMLElement | null;
-    private createExpenseButton: HTMLElement | null;
-    private tableBody: HTMLElement | null;
+    readonly createIncomeButton: HTMLLinkElement | null;
+    readonly createExpenseButton: HTMLLinkElement | null;
+    readonly tableBody: HTMLElement | null;
     private getOperations: GetOperationParamInterface
     public period: string;
+    readonly balanceElement: HTMLElement | null;
 
     constructor() {
         this.period = 'today';
@@ -21,43 +23,58 @@ export class Balance {
         this.dateFromElement = document.getElementById('dateFrom') as HTMLInputElement;
         this.dateToElement = document.getElementById('dateTo') as HTMLInputElement;
         this.IntervalDurationDivElement = document.getElementById('interval-duration');
-        this.createIncomeButton = document.getElementById("create-income");
-        this.createExpenseButton = document.getElementById("create-expense");
+        this.createIncomeButton = document.getElementById("create-income") as HTMLLinkElement;
+        this.createExpenseButton = document.getElementById("create-expense") as HTMLLinkElement;
         this.tableBody = document.getElementById('records');
+        this.balanceElement = document.getElementById('balance');
         this.getOperations = OperationsService.getOperations;
         this.init();
         this.getOperations(this.period, this.dateFromElement, this.dateToElement)
-            .then(operations => {this.loadBalance(operations);});
+            .then(operations => {
+                this.loadBalance(operations);
+            });
     }
 
-     init() {
-        const currentPeriod = new URLSearchParams(location.search).get('period');
-        this.createIncomeButton.href += `&period=${currentPeriod}`;
-        this.createExpenseButton.href += `&period=${currentPeriod}`;
-        this.period = new URLSearchParams(location.search).get('period');
+    init(): void {
+        const currentPeriod: string | null = new URLSearchParams(location.search).get('period');
+        this.period = currentPeriod ? currentPeriod : 'today';
+        if (this.createIncomeButton) {
+            this.createIncomeButton.href += `&period=${currentPeriod}`;
+        }
+        if (this.createExpenseButton) {
+            this.createExpenseButton.href += `&period=${currentPeriod}`;
+        }
         periodSelectButtonsProcessing.call(this);
-        this.dateFromElement.addEventListener('change', () => {
-            this.tableBody.innerHTML = '';
-            this.getOperations(this.period, this.dateFromElement, this.dateToElement)
-                .then(operations => {this.loadBalance(operations);})
-        })
-        this.dateToElement.addEventListener('change', () => {
-            this.tableBody.innerHTML = '';
-            this.getOperations(this.period, this.dateFromElement, this.dateToElement)
-                .then(operations => {this.loadBalance(operations);})
-        })
+        if (this.dateFromElement) {
+            this.dateFromElement.addEventListener('change', () => {
+                this.tableBody ? this.tableBody.innerHTML = '' : null;
+                this.getOperations(this.period, this.dateFromElement, this.dateToElement)
+                    .then(operations => {
+                        this.loadBalance(operations);
+                    })
+            })
+        }
+        if (this.dateToElement) {
+            this.dateToElement.addEventListener('change', () => {
+                this.tableBody ? this.tableBody.innerHTML = '' : null;
+                this.getOperations(this.period, this.dateFromElement, this.dateToElement)
+                    .then(operations => {
+                        this.loadBalance(operations);
+                    })
+            })
+        }
     }
 
-    loadBalance(operations) {
+    loadBalance(operations: OperationType[]) {
         operations.forEach(operation => {
             const trElement = document.createElement("tr");
             const thElement = document.createElement("th");
             thElement.setAttribute('scope', 'row');
             thElement.classList.add('row_number');
-            thElement.innerText = operation.id
+            thElement.innerText = operation.id.toString()
             trElement.appendChild(thElement)
             const typeCellElement = document.createElement("td");
-            typeCellElement.innerText = operation.type  === 'income' ? 'доход' : 'расход'
+            typeCellElement.innerText = operation.type === 'income' ? 'доход' : 'расход'
             if (operation.type === "expense") {
                 typeCellElement.classList.add('text-danger')
             } else {
@@ -65,8 +82,8 @@ export class Balance {
             }
             trElement.appendChild(typeCellElement)
 
-            trElement.insertCell().innerText = operation.category ? operation.category.toLocaleLowerCase(): '';
-            trElement.insertCell().innerText = `${parseInt(operation.amount).toLocaleString()}$`;
+            trElement.insertCell().innerText = operation.category ? operation.category.toLocaleLowerCase() : '';
+            trElement.insertCell().innerText = `${operation.amount.toLocaleString()}$`;
             trElement.insertCell().innerText = (new Date(operation.date)).toLocaleDateString();
             trElement.insertCell().innerText = operation.comment;
             trElement.insertCell().innerHTML = `
@@ -79,28 +96,35 @@ export class Balance {
                                 </a>
                             </div>
     `
-            document.getElementById('records').appendChild(trElement);
+            const tableBodyElement = document.getElementById('records')
+            if (tableBodyElement) {
+                tableBodyElement.appendChild(trElement);
+            }
         })
 
 
         const modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
-        const removeButtonsElementArray = [...document.getElementsByClassName("remove-button")];
+        const removeButtonsElementArray: HTMLElement[] = Array.from(document.querySelectorAll(".remove-button"));
 
         removeButtonsElementArray.forEach((btn) => {
             btn.addEventListener("click", () => {
-                const confirmRemoveButton = document.getElementById('confirm-remove')
-                const cloneBtn = confirmRemoveButton.cloneNode(true)
-                confirmRemoveButton.parentNode.replaceChild(cloneBtn, confirmRemoveButton);
-                cloneBtn.addEventListener('click', () => {
-                    const operationId = btn.getAttribute('operation-id');
-                    modal.hide()
-                    btn.parentElement.parentElement.parentElement.remove();
-                    HttpUtils.request(`/operations/${operationId}`, 'DELETE').then(() => {
-                        BalanceService.getBalance().then((balance) => {
-                            document.getElementById('balance').innerText = `${parseInt(balance).toLocaleString()} $`
+                const confirmRemoveButton: HTMLElement | null = document.getElementById('confirm-remove')
+                if (confirmRemoveButton) {
+                    const cloneBtn = confirmRemoveButton.cloneNode(true)
+                    confirmRemoveButton.parentNode!.replaceChild(cloneBtn, confirmRemoveButton);
+                    cloneBtn.addEventListener('click', () => {
+                        const operationId = btn.getAttribute('operation-id');
+                        modal.hide()
+                        btn.parentElement!.parentElement!.parentElement!.remove();
+                        HttpUtils.request(`/operations/${operationId}`, 'DELETE').then(() => {
+                            BalanceService.getBalance().then((balance) => {
+                                if (balance && this.balanceElement) {
+                                    this.balanceElement.innerText = `${parseInt(balance).toLocaleString()} $`
+                                }
+                            })
                         })
                     })
-                })
+                }
             })
         })
     }
