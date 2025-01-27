@@ -81,7 +81,7 @@ export class MainPage {
 
         const total: number = data.reduce((acc: number, cur) => acc + cur.amount, 0)
         const result: { [key: string]: number } = data.reduce((acc: { [key: string]: number }, cur) => {
-            acc[cur.category] = cur.amount + (acc[cur.category] || 0);
+            acc[cur.category as string] = cur.amount + (acc[cur.category as string] || 0);
             return acc;
         }, {})
 

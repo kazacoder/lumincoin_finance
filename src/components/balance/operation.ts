@@ -1,16 +1,22 @@
 import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
 import {OpenNewRouteInterface} from "../types/interfaces";
+import {CategoryKindType, CategoryResponseType, OperationKeysType, OperationType} from "../types/types";
 
 class Operation {
-    private categorySelectElement: HTMLElement | null;
-    private typeSelectElement: HTMLElement | null;
-    private period: string;
-    private openNewRoute: OpenNewRouteInterface;
-    readonly categoryObject: {};
-    private params: URLSearchParams | null = null;
-    private cancelButton: HTMLLinkElement | null = null;
-    private dateInputElement: HTMLInputElement | null = null;
+    public categorySelectElement: HTMLInputElement | null;
+    public typeSelectElement: HTMLSelectElement | null;
+    public period: string;
+    public openNewRoute: OpenNewRouteInterface;
+    readonly categoryObject: { [key: string]: number } = {};
+    public params: URLSearchParams | null = null;
+    public cancelButton: HTMLLinkElement | null = null;
+    public dateInputElement: HTMLInputElement | null = null;
+    public proceedButton: HTMLElement | null = null;
+    public amountInputElement: HTMLInputElement | null = null;
+    public commentaryInputElement: HTMLInputElement | null = null;
+    public validations: { element: HTMLElement | null }[] | [] = [];
+    private typeOptionsObject: { [key: string]: HTMLOptionElement } = {};
 
     constructor(openNewRoute: OpenNewRouteInterface) {
         this.categorySelectElement = null;
@@ -21,7 +27,7 @@ class Operation {
         this.init().then();
     }
 
-    async init(): Promise<void> {
+    public async init(): Promise<void> {
         this.findElements();
         this.setValidations();
         this.setTypeSelectElementEventListener().then();
@@ -31,25 +37,26 @@ class Operation {
             this.period = paramsPeriod;
         }
         this.cancelButton ? this.cancelButton.href = `/balance?period=${this.period}` : null;
-        this.dateInputElement ? this.dateInputElement.value = new Date().toISOString().slice(0, 10): null;
+        this.dateInputElement ? this.dateInputElement.value = new Date().toISOString().slice(0, 10) : null;
     }
 
-    async getCategories(type) {
-        const result = await HttpUtils.request('/categories/' + type, 'GET');
+    private async getCategories(type: CategoryKindType): Promise<CategoryResponseType[]> {
+        const result: any = await HttpUtils.request('/categories/' + type, 'GET');
+        console.log(result);
         return result.response;
     }
 
-    findElements() {
-        this.categorySelectElement = document.getElementById("category");
-        this.typeSelectElement = document.getElementById('type');
+    private findElements(): void {
+        this.categorySelectElement = document.getElementById("category") as HTMLInputElement;
+        this.typeSelectElement = document.getElementById('type') as HTMLSelectElement;
         this.proceedButton = document.getElementById('proceed');
-        this.cancelButton = document.getElementById('cancel');
-        this.amountInputElement = document.getElementById('amount');
-        this.dateInputElement = document.getElementById('date');
-        this.commentaryInputElement = document.getElementById('commentary');
+        this.cancelButton = document.getElementById('cancel') as HTMLLinkElement;
+        this.amountInputElement = document.getElementById('amount') as HTMLInputElement;
+        this.dateInputElement = document.getElementById('date') as HTMLInputElement;
+        this.commentaryInputElement = document.getElementById('commentary') as HTMLInputElement;
     }
 
-    setValidations () {
+    private setValidations(): void {
         this.validations = [
             {element: this.categorySelectElement},
             {element: this.typeSelectElement},
@@ -58,15 +65,17 @@ class Operation {
         ]
     }
 
-    async loadCategoryList(category, safeToObject = false) {
+    public async loadCategoryList(category: CategoryKindType, safeToObject: boolean = false): Promise<void> {
         if (['income', 'expense'].includes(category)) {
-            const categories = await this.getCategories(category);
+            const categories: CategoryResponseType[] = await this.getCategories(category);
             categories.forEach(category => {
                 const optionElement = document.createElement('option');
-                optionElement.value = category.id;
+                optionElement.value = category.id.toString();
                 optionElement.innerText = category.title;
                 optionElement.classList.add('added-option-category');
-                this.categorySelectElement.appendChild(optionElement);
+                if (this.categorySelectElement) {
+                    this.categorySelectElement.appendChild(optionElement);
+                }
                 if (safeToObject) {
                     this.categoryObject[category.title] = category.id;
                 }
@@ -74,21 +83,24 @@ class Operation {
         }
     }
 
-    async setTypeSelectElementEventListener() {
-        this.typeSelectElement.addEventListener('change', (e) => {
-            document.querySelectorAll('.added-option-category').forEach(item => {
-                item.remove();
+    private async setTypeSelectElementEventListener(): Promise<void> {
+        if (this.typeSelectElement) {
+            this.typeSelectElement.addEventListener('change', (e) => {
+                document.querySelectorAll('.added-option-category').forEach(item => {
+                    item.remove();
+                });
+                this.loadCategoryList((e.target as HTMLInputElement).value as CategoryKindType);
+                this.categorySelectElement!.value = '';
             });
-            this.loadCategoryList(e.target.value);
-            this.categorySelectElement.value = '';
-        });
+        }
     }
 
-    setInitialType(type) {
+    public setInitialType(this: this, type: CategoryKindType): void {
+        if (!this.typeSelectElement) return;
         this.typeOptionsObject = {}
-        for (let el of this.typeSelectElement.children) {
-            if (el.value) {
-                this.typeOptionsObject[el.value] = el;
+        for (let el of Array.from(this.typeSelectElement.children)) {
+            if ((el as HTMLOptionElement).value) {
+                this.typeOptionsObject[(el as HTMLOptionElement).value] = el as HTMLOptionElement;
             }
         }
         if (this.typeOptionsObject[type]) {
@@ -99,75 +111,99 @@ class Operation {
 
 export class OperationCreate extends Operation {
 
-    async init() {
+    public async init(): Promise<void> {
         super.init().then();
-        const type = (new URLSearchParams(window.location.search)).get('type');
-        this.setInitialType(type);
-
-        if (this.typeSelectElement.value) {
-            await this.loadCategoryList(this.typeSelectElement.value)
+        const type: CategoryKindType | null = (new URLSearchParams(window.location.search)).get('type') as CategoryKindType | null;
+        if (type) {
+            this.setInitialType(type);
         }
 
-        this.proceedButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (ValidationUtils.validateForm(this.validations)) {
-                HttpUtils.request('/operations', 'POST', true, {
-                    type: this.typeSelectElement.value,
-                    category_id: parseInt(this.categorySelectElement.value),
-                    amount: parseInt(this.amountInputElement.value),
-                    date: new Date(this.dateInputElement.value).toISOString().slice(0, 10),
-                    comment: this.commentaryInputElement.value ? this.commentaryInputElement.value : ' ',
-                })
-                this.openNewRoute(`/balance?period=${this.period}`)
-            }
-        })
+        if (this.typeSelectElement!.value) {
+            await this.loadCategoryList(this.typeSelectElement!.value as CategoryKindType)
+        }
+
+        if (this.proceedButton) {
+            this.proceedButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (ValidationUtils.validateForm(this.validations)) {
+                    HttpUtils.request('/operations', 'POST', true, {
+                        type: this.typeSelectElement!.value,
+                        category_id: parseInt(this.categorySelectElement!.value),
+                        amount: parseInt(this.amountInputElement!.value),
+                        date: new Date(this.dateInputElement!.value).toISOString().slice(0, 10),
+                        comment: this.commentaryInputElement!.value ? this.commentaryInputElement!.value : ' ',
+                    })
+                    this.openNewRoute(`/balance?period=${this.period}`)
+                }
+            })
+        }
     }
 }
 
 export class OperationEdit extends Operation {
+    private currentOperation: OperationType | null = null;
+
     async init() {
         super.init().then();
-        document.querySelector('.main-content__title').innerText = 'Редактирование дохода/расхода';
-        this.proceedButton.innerText = 'Сохранить'
-        const operationId = this.params.get('operationId');
-        await this.loadCurrentOperation(operationId);
+        const mainTitleElement: HTMLElement | null = document.querySelector('.main-content__title');
+        if (mainTitleElement) {
+            mainTitleElement.innerText = 'Редактирование дохода/расхода';
+        }
 
-        this.proceedButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (ValidationUtils.validateForm(this.validations)) {
-                const changedOperation = {}
-                changedOperation.type = this.typeSelectElement.value;
-                changedOperation.category_id = parseInt(this.categorySelectElement.value);
-                changedOperation.amount = parseInt(this.amountInputElement.value);
-                changedOperation.date = new Date(this.dateInputElement.value).toISOString().slice(0, 10);
-                changedOperation.comment = this.commentaryInputElement.value ? this.commentaryInputElement.value : ' ';
-                const hasChanged = Object.keys(changedOperation).map(key => {
-                    return changedOperation[key] !== this.curretnOperation[key]
-                }).some(Boolean);
-                if (hasChanged) {
-                    HttpUtils.request(`/operations/${operationId}`, 'PUT', true, changedOperation)
-                }
-                this.openNewRoute(`/balance?period=${this.period}`)
+        let operationId: string | null = null;
+        if (this.params) {
+            operationId = this.params.get('operationId');
+            if (operationId) {
+                await this.loadCurrentOperation(operationId);
+            } else {
+                await this.openNewRoute('/balance');
+                return;
             }
-        })
-        this.cancelButton.href = `/balance?period=${this.period}`
-        this.typeSelectElement.disabled = true;
+        }
+        if (this.proceedButton) {
+            this.proceedButton.innerText = 'Сохранить'
+            this.proceedButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (ValidationUtils.validateForm(this.validations)) {
+                    const changedOperation: OperationType = {
+                        type: this.typeSelectElement!.value,
+                        category_id: parseInt(this.categorySelectElement!.value),
+                        amount: parseInt(this.amountInputElement!.value),
+                        date: new Date(this.dateInputElement!.value).toISOString().slice(0, 10),
+                        comment: this.commentaryInputElement!.value ? this.commentaryInputElement!.value : ' ',
+                    };
+                    const hasChanged: boolean = Object.keys(changedOperation).map((key) => {
+                        return changedOperation[key as OperationKeysType] !== this.currentOperation![key as OperationKeysType]
+                    }).some(Boolean);
+                    if (hasChanged) {
+                        HttpUtils.request(`/operations/${operationId}`, 'PUT', true, changedOperation)
+                    }
+                    this.openNewRoute(`/balance?period=${this.period}`)
+                }
+            })
+        }
+        if (this.cancelButton) {
+            this.cancelButton.href = `/balance?period=${this.period}`
+        }
+        if (this.typeSelectElement) {
+            this.typeSelectElement.disabled = true;
+        }
     }
 
-    async loadCurrentOperation(id) {
+    async loadCurrentOperation(id: string) {
         const result = await HttpUtils.request(`/operations/${id}`, 'GET');
 
         if (result.response && !result.response.error) {
-            this.curretnOperation = result.response;
-            this.setInitialType(this.curretnOperation.type);
-            if (this.typeSelectElement.value) {
-                await this.loadCategoryList(this.typeSelectElement.value, true)
+            this.currentOperation = result.response;
+            this.setInitialType(this.currentOperation!.type as CategoryKindType);
+            if (this.typeSelectElement!.value) {
+                await this.loadCategoryList(this.typeSelectElement!.value as CategoryKindType, true)
             }
-            this.curretnOperation.category_id = this.categoryObject[this.curretnOperation.category]
-            this.categorySelectElement.value = this.categoryObject[this.curretnOperation.category]
-            this.amountInputElement.value = this.curretnOperation.amount;
-            this.dateInputElement.value = new Date(this.curretnOperation.date.split('.').reverse().join('-')).toISOString().slice(0, 10);
-            this.commentaryInputElement.value = this.curretnOperation.comment;
+            this.currentOperation!.category_id = this.categoryObject[this.currentOperation!.category as string]
+            this.categorySelectElement!.value = this.categoryObject[this.currentOperation!.category as string].toString()
+            this.amountInputElement!.value = this.currentOperation!.amount.toString();
+            this.dateInputElement!.value = new Date(this.currentOperation!.date.split('.').reverse().join('-')).toISOString().slice(0, 10);
+            this.commentaryInputElement!.value = this.currentOperation!.comment;
         }
     }
 }

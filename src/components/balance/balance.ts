@@ -71,7 +71,7 @@ export class Balance {
             const thElement = document.createElement("th");
             thElement.setAttribute('scope', 'row');
             thElement.classList.add('row_number');
-            thElement.innerText = operation.id.toString()
+            thElement.innerText = operation.id!.toString()
             trElement.appendChild(thElement)
             const typeCellElement = document.createElement("td");
             typeCellElement.innerText = operation.type === 'income' ? 'доход' : 'расход'
