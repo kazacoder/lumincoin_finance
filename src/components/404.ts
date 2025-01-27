@@ -1,9 +1,11 @@
 export class NotFoundError {
-    constructor(historyBackLink) {
+    constructor(historyBackLink: string) {
         if (historyBackLink) {
-            const historyBackElement = document.getElementById('history-back')
-            historyBackElement.style.display = 'block';
-            historyBackElement.children[0].href = historyBackLink
+            const historyBackElement: HTMLElement | null = document.getElementById('history-back')
+            if (historyBackElement) {
+                historyBackElement.style.display = 'block';
+                (historyBackElement.children[0] as HTMLLinkElement).href = historyBackLink
+            }
         }
     }
 }
