@@ -1,20 +1,28 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
+import {OpenNewRouteInterface} from "../types/interfaces";
+import {AuthInfoType} from "../types/types";
 
 export class Logout {
-    constructor(openNewRoute) {
+    readonly openNewRoute: OpenNewRouteInterface;
+    readonly refreshToken: string | AuthInfoType | null;
+
+    constructor(openNewRoute: OpenNewRouteInterface) {
         this.openNewRoute = openNewRoute;
         this.refreshToken = AuthUtils.getAuthInfo(AuthUtils.refreshTokenKey)
         if (!AuthUtils.getAuthInfo(AuthUtils.accessTokenKey) || !this.refreshToken) {
-            return this.openNewRoute('/login')
+            this.openNewRoute('/login').then();
+            return;
         }
         this.logout().then()
     }
 
-    async logout() {
-        await AuthService.logOut({refreshToken: this.refreshToken});
+    private async logout(): Promise<void> {
+        if (typeof this.refreshToken === "string") {
+            await AuthService.logOut({refreshToken: this.refreshToken});
+        }
         AuthUtils.removeAuthInfo();
-        this.openNewRoute('/login')
+        await this.openNewRoute('/login')
     }
 }
 
