@@ -1,34 +1,45 @@
 import {HttpUtils} from "../../utils/http-utils";
 import {OperationsService} from "../../services/operations-service";
 import {BalanceService} from "../../services/balance-service";
+import {CategoryResponseType} from "../types/types";
 
 export class Categories {
-    constructor(type) {
+    private types: { income: { title: string }; expense: { title: string } };
+    readonly type: 'income' | "expense";
+    readonly createCategoryElement: HTMLLinkElement | null;
+
+    constructor(type: 'income' | 'expense') {
         this.types = {
             income: {title: 'Доходы'},
             expense: {title: 'Расходы'},
         }
         this.type = type;
-        this.createCategoryElement = document.getElementById("create-category");
+        this.createCategoryElement = document.getElementById("create-category") as HTMLLinkElement;
         this.init();
         this.getCategories().then();
     }
 
-    init() {
-        document.querySelector('.main-content__title').innerText = this.types[this.type].title;
-        document.getElementById('create-category').href = `/categories/${this.type}/create`;
+    private init(): void {
+        const mainTitleElement: HTMLElement | null = document.querySelector('.main-content__title');
+        if (mainTitleElement) {
+            mainTitleElement.innerText = this.types[this.type].title;
+        }
+        if (this.createCategoryElement) {
+            this.createCategoryElement.href = `/categories/${this.type}/create`;
+        }
     }
 
-    async getCategories() {
+    private async getCategories(): Promise<void> {
         const result = await HttpUtils.request(`/categories/${this.type}`, 'GET');
         this.showCategories(result.response).then();
     }
 
-    async showCategories(categories) {
-        categories.forEach(category => {
-            const newCatElement = document.createElement('div');
-            newCatElement.classList.add('card', 'card-category', 'border', 'rounded-3', 'me-3', 'mb-3', 'category-item')
-            newCatElement.innerHTML = `
+    private async showCategories(categories: CategoryResponseType[]): Promise<void> {
+        if (this.createCategoryElement) {
+            categories.forEach(category => {
+                const newCatElement = document.createElement('div');
+                newCatElement.classList.add('card', 'card-category', 'border', 'rounded-3', 'me-3', 'mb-3', 'category-item')
+                newCatElement.innerHTML = `
                 <div class="card-body p-20">
                     <div class="card-title h3 f-weight-500" id="${category.id}">${category.title}</div>
                     <div class="actions f-weight-500">
@@ -39,27 +50,31 @@ export class Categories {
                     </div>
                 </div>
             `;
-            this.createCategoryElement.parentNode.insertBefore(newCatElement, this.createCategoryElement);
-        })
+                this.createCategoryElement!.parentNode!.insertBefore(newCatElement, this.createCategoryElement);
+            })
+        }
 
         const modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
-        document.getElementById('delete-modal-title').innerText = 'Вы действительно хотите удалить категорию? Связанные доходы будут удалены навсегда.'
-        const removeButtonsElementArray = [...document.getElementsByClassName("remove-button")];
+        const deleteModalTitle = document.getElementById('delete-modal-title');
+        if (deleteModalTitle) {
+            deleteModalTitle.innerText = 'Вы действительно хотите удалить категорию? Связанные доходы будут удалены навсегда.'
+        }
+        const removeButtonsElementArray = Array.from(document.getElementsByClassName("remove-button")) as HTMLElement[];
 
         removeButtonsElementArray.forEach((btn) => {
             btn.addEventListener("click", () => {
-                const confirmRemoveButton = document.getElementById('confirm-remove')
+                const confirmRemoveButton = document.getElementById('confirm-remove') as HTMLElement;
                 const cloneBtn = confirmRemoveButton.cloneNode(true)
-                confirmRemoveButton.parentNode.replaceChild(cloneBtn, confirmRemoveButton);
+                confirmRemoveButton.parentNode!.replaceChild(cloneBtn, confirmRemoveButton);
                 cloneBtn.addEventListener('click', this.removeButtonEventListener.bind(this, btn, modal))
             })
         })
     }
 
-    async removeButtonEventListener(btn, modal) {
+    private async removeButtonEventListener(btn: HTMLElement, modal: any): Promise<void> {
             modal.hide()
-            const catId = btn.parentElement.previousElementSibling.id
-            const catTitle = btn.parentElement.previousElementSibling.innerHTML
+            const catId = btn.parentElement!.previousElementSibling!.id
+            const catTitle = btn.parentElement!.previousElementSibling!.innerHTML
 
             const operations = await OperationsService.getOperations('all')
             const removingOperations = operations.filter(operation => operation.category === catTitle && operation.type === this.type)
@@ -71,12 +86,15 @@ export class Categories {
                 this.clearCategoriesList()
                 this.getCategories().then();
                 BalanceService.getBalance().then((balance) => {
-                    document.getElementById('balance').innerText = `${parseInt(balance).toLocaleString()} $`
+                    const balanceElement = document.getElementById('balance');
+                    if (balanceElement && balance) {
+                        balanceElement.innerText = `${parseInt(balance).toLocaleString()} $`
+                    }
                 })
             })
     }
 
-    clearCategoriesList() {
+    private clearCategoriesList(): void {
         document.querySelectorAll('.category-item').forEach(category => {
             category.remove();
         })
