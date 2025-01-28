@@ -1,25 +1,37 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {AuthService} from "../../services/auth-service";
 import {ValidationUtils} from "../../utils/validation-utils";
-import {LoginType} from "../types/types";
+import {OpenNewRouteInterface} from "../types/interfaces";
+import {CommonErrorType, LoginResponseType, ValidationsType} from "../types/types";
 
 export class Login {
-    constructor(openNewRoute) {
+    private readonly openNewRoute: OpenNewRouteInterface;
+    private emailElement: HTMLInputElement | null = null;
+    private passwordElement: HTMLInputElement | null = null;
+    private rememberMeElement: HTMLInputElement | null = null;
+    private commonErrorElement: HTMLElement | null = null;
+    private passwordErrorElement: HTMLInputElement | null = null;
+    private validations: ValidationsType[] | [] = [];
+
+    constructor(openNewRoute: OpenNewRouteInterface) {
         this.openNewRoute = openNewRoute;
         this.findElements();
         this.setValidations();
-        document.getElementById("login").addEventListener("click", this.login.bind(this));
+        const loginButtonElement = document.getElementById("login");
+        if (loginButtonElement) {
+            loginButtonElement.addEventListener("click", this.login.bind(this));
+        }
     }
 
-    findElements() {
-        this.emailElement = document.getElementById('email');
-        this.passwordElement = document.getElementById('password');
-        this.rememberMeElement = document.getElementById('remember');
+    private findElements(): void {
+        this.emailElement = document.getElementById('email') as HTMLInputElement;
+        this.passwordElement = document.getElementById('password') as HTMLInputElement;
+        this.rememberMeElement = document.getElementById('remember') as HTMLInputElement;
         this.commonErrorElement = document.getElementById('common-error');
-        this.passwordErrorElement = document.getElementById('password-error');
+        this.passwordErrorElement = document.getElementById('password-error') as HTMLInputElement;
     }
 
-    setValidations () {
+    private setValidations(): void {
         this.validations = [
             {
                 element: this.passwordElement,
@@ -32,30 +44,39 @@ export class Login {
         ]
     }
 
-    async login() {
-        this.commonErrorElement.style.display = 'none';
+     private async login(): Promise<void> {
+        if (this.commonErrorElement) {
+            this.commonErrorElement.style.display = 'none';
+        }
         if (ValidationUtils.validateForm(this.validations)) {
-            const loginResult: LoginType = await AuthService.logIn({
-                email: this.emailElement.value,
-                password: this.passwordElement.value,
-                rememberMe: this.rememberMeElement.checked,
+            let loginResult: LoginResponseType | CommonErrorType | null = await AuthService.logIn({
+                email: this.emailElement!.value,
+                password: this.passwordElement!.value,
+                rememberMe: this.rememberMeElement ? this.rememberMeElement.checked : false,
             })
 
+            if (!(loginResult as CommonErrorType).errorMessage && (loginResult as LoginResponseType).user) {
+                loginResult = loginResult as LoginResponseType;
+            } else {
+                if (this.commonErrorElement) {
+                    this.commonErrorElement.style.display = 'block';
+                    if (loginResult && (loginResult as CommonErrorType).errorMessage) {
+                        this.commonErrorElement.innerText = (loginResult as CommonErrorType).errorMessage;
+                    }
+                }
+                return;
+            }
+
             if (loginResult && loginResult.user) {
-                AuthUtils.setAuthInfo(loginResult.tokens.accessToken, loginResult.tokens.refreshToken, {
+                AuthUtils.setAuthInfo(loginResult.tokens.accessToken,
+                    loginResult.tokens.refreshToken, {
                     id: loginResult.user.id,
                     name: loginResult.user.name,
                     lastName: loginResult.user.lastName,
                 });
-
                 return this.openNewRoute('/')
             }
-            this.commonErrorElement.style.display = 'block';
-            if (loginResult && loginResult.errorMessage) {
-                this.commonErrorElement.innerText = loginResult.errorMessage;
-            }
         }
-
     }
 }
 

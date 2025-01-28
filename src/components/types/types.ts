@@ -75,3 +75,16 @@ export type AggregatedDataType = {
     total: number,
 }
 
+export type ValidationsType = {
+    element: HTMLInputElement | HTMLSelectElement | null
+    password?: boolean,
+    options?: {
+        pattern?: RegExp,
+        checkProperty?: boolean,
+        compareTo?: HTMLInputElement,
+    },
+    errorElement?: HTMLElement | null
+    wrongPatternText?: string,
+    confirmPassword?: boolean,
+}
+

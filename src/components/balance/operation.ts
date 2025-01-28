@@ -1,7 +1,13 @@
 import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
 import {OpenNewRouteInterface} from "../types/interfaces";
-import {CategoryKindType, CategoryResponseType, OperationKeysType, OperationType} from "../types/types";
+import {
+    CategoryKindType,
+    CategoryResponseType,
+    OperationKeysType,
+    OperationType,
+    ValidationsType
+} from "../types/types";
 
 class Operation {
     public categorySelectElement: HTMLInputElement | null;
@@ -15,7 +21,7 @@ class Operation {
     public proceedButton: HTMLElement | null = null;
     public amountInputElement: HTMLInputElement | null = null;
     public commentaryInputElement: HTMLInputElement | null = null;
-    public validations: { element: HTMLElement | null }[] | [] = [];
+    public validations: ValidationsType[] | [] = [];
     private typeOptionsObject: { [key: string]: HTMLOptionElement } = {};
 
     constructor(openNewRoute: OpenNewRouteInterface) {
