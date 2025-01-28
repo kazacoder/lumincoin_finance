@@ -9,7 +9,7 @@ export interface LoginType {
 export interface SignUpType extends LoginType{
     name: string,
     lastName: string,
-    passwordRepeat: boolean,
+    passwordRepeat: string,
 }
 
 export interface GetOperationParamInterface {
