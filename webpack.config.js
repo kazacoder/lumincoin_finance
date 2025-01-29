@@ -5,7 +5,8 @@ const Dotenv = require("dotenv-webpack");
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-    entry: './src/app.js',
+    entry: './src/app.ts',
+    devtool: 'inline-source-map',
     mode: "development",
     output: {
         filename: 'app.js',
@@ -22,6 +23,11 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+            {
                 test: /\.(woff(2)?|ttf|eot)$/,
                 type: 'asset/resource',
                 generator: {
@@ -37,6 +43,9 @@ module.exports = {
                 ],
             },
         ],
+    },
+    resolve: {
+        extensions: ['.tsx', '.ts', '.js'],
     },
     plugins: [
         new HtmlWebpackPlugin({

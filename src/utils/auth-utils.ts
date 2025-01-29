@@ -1,40 +1,41 @@
 import config from "../config/config";
+import {AuthInfoType, AuthUtilsKeys, UserInfoType} from "../components/types/types";
 
 export class AuthUtils {
-    static accessTokenKey = 'accessToken'
-    static refreshTokenKey = 'refreshToken'
-    static userInfoTokenKey = 'userInfo'
+    public static accessTokenKey: string = AuthUtilsKeys.accessTokenKey;
+    public static refreshTokenKey: string = AuthUtilsKeys.refreshTokenKey;
+    public static userInfoTokenKey: string = AuthUtilsKeys.userInfoTokenKey;
 
-    static setAuthInfo(accessToken, refreshToken, userInfo = null) {
+    public static setAuthInfo(accessToken: string, refreshToken: string, userInfo: UserInfoType | null = null): void {
         localStorage.setItem(this.accessTokenKey, accessToken);
         localStorage.setItem(this.refreshTokenKey, refreshToken);
         if (userInfo) {
             localStorage.setItem(this.userInfoTokenKey, JSON.stringify(userInfo))
         }
     }
-    static removeAuthInfo() {
+    public static removeAuthInfo(): void {
         localStorage.removeItem(this.accessTokenKey);
         localStorage.removeItem(this.refreshTokenKey);
         localStorage.removeItem(this.userInfoTokenKey)
     }
 
-    static getAuthInfo(key = null) {
+    public static getAuthInfo(key: string | null = null): string | AuthInfoType | null {
         if (key && [this.accessTokenKey, this.refreshTokenKey, this.userInfoTokenKey].includes(key)) {
             return localStorage.getItem(key);
         } else if (!key) {
             return {
-                [this.accessTokenKey]: localStorage.getItem(this.accessTokenKey),
-                [this.refreshTokenKey]: localStorage.getItem(this.refreshTokenKey),
-                [this.userInfoTokenKey]: localStorage.getItem(this.userInfoTokenKey),
+                [AuthUtilsKeys.accessTokenKey]: localStorage.getItem(this.accessTokenKey),
+                [AuthUtilsKeys.refreshTokenKey]: localStorage.getItem(this.refreshTokenKey),
+                [AuthUtilsKeys.userInfoTokenKey]: localStorage.getItem(this.userInfoTokenKey),
             }
         } else return null;
     }
 
-    static async updateRefreshToken () {
-        let result = false;
-        const refreshToken = this.getAuthInfo(this.refreshTokenKey);
+    public static async updateRefreshToken(): Promise<boolean> {
+        let result: boolean = false;
+        const refreshToken: AuthInfoType | string | null = this.getAuthInfo(this.refreshTokenKey);
         if (refreshToken) {
-            const response = await fetch(config.api + '/refresh', {
+            const response: Response = await fetch(config.api + '/refresh', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

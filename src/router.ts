@@ -10,9 +10,17 @@ import {Category} from "./components/categories/category";
 import {Logout} from "./components/auth/logout";
 import {AuthUtils} from "./utils/auth-utils";
 import {BalanceService} from "./services/balance-service";
+import {RouteType, RouteTypes, UserInfoType} from "./components/types/types";
 
 
 export class Router {
+    readonly titlePageElement: HTMLElement | null;
+    readonly contentPageElement: HTMLElement | null;
+    private historyBackLink: string | null;
+    private userName: null | string;
+    readonly routes: RouteTypes;
+    private profileNameElement: HTMLElement | null = null;
+
     constructor() {
         this.titlePageElement = document.getElementById('title');
         this.contentPageElement = document.getElementById('content');
@@ -71,7 +79,7 @@ export class Router {
             '/404': {
                 title: '404',
                 filePathTemplate: '/templates/pages/404.html',
-                useLayout: false,
+                useLayout: null,
                 load: () => {
                     new NotFoundError(this.historyBackLink)
                 },
@@ -87,7 +95,7 @@ export class Router {
                 styles: [],
                 scripts: [],
                 unload: () => {
-                    document.getElementById('includes').remove()
+                    this.removeIncludes();
                 }
             },
             '/categories/income': {
@@ -101,7 +109,7 @@ export class Router {
                 styles: [],
                 scripts: [],
                 unload: () => {
-                    document.getElementById('includes').remove()
+                    this.removeIncludes();
                 }
             },
             '/categories/expense': {
@@ -115,7 +123,7 @@ export class Router {
                 styles: [],
                 scripts: [],
                 unload: () => {
-                    document.getElementById('includes').remove()
+                    this.removeIncludes()
                 }
             },
             '/categories/income/edit': {
@@ -211,37 +219,42 @@ export class Router {
         this.initEvents();
     }
 
-    initEvents() {
+    private removeIncludes(): void {
+        const includesElement: HTMLElement | null = document.getElementById('includes')
+        includesElement ? includesElement.remove() : null
+    }
+
+    private initEvents(): void {
         window.addEventListener('DOMContentLoaded', this.activateRoute.bind(this));
         window.addEventListener('popstate', this.activateRoute.bind(this));
         document.addEventListener('click', this.clickHandler.bind(this));
     }
 
-    async openNewRoute(url) {
+    public async openNewRoute(url: string): Promise<void> {
         if (!AuthUtils.getAuthInfo(AuthUtils.accessTokenKey) && url !== '/sign-up') {
             if (this.routes[window.location.pathname]) {
                url = '/login'
             } else {url ='/404'}
         }
-        const currentRoute = window.location.pathname;
+        const currentRoute: string = window.location.pathname;
         history.pushState(null, '', url);
         await this.activateRoute(null, currentRoute)
     }
 
-    async clickHandler(e) {
+    private async clickHandler(e: MouseEvent): Promise<void> {
 
-        let element = null;
-        if (e.target.nodeName === 'A') {
-            element = e.target;
-        } else if (e.target.parentNode.nodeName === 'A') {
-            element = e.target.parentNode;
-        } else if (e.target.parentNode.parentNode.nodeName === 'A') {
-            element = e.target.parentNode.parentNode;
+        let element: HTMLLinkElement | null = null;
+        if (((e as MouseEvent).target as Element).nodeName === 'A') {
+            element = e.target as HTMLLinkElement;
+        } else if ((((e as MouseEvent).target as Element).parentNode as Element).nodeName === 'A') {
+            element = (e.target as Element).parentNode as HTMLLinkElement;
+        } else if (((((e as MouseEvent).target as Element).parentNode as Element).parentNode as Element).nodeName === 'A') {
+            element = (((e as MouseEvent).target as Element).parentNode as Element).parentNode as HTMLLinkElement;
         }
         if (element) {
             e.preventDefault()
             const currentRoute = window.location.pathname;
-            const url = element.href.replace(window.location.origin, '');
+            const url = (element as HTMLLinkElement).href.replace(window.location.origin, '');
 
             if (!url || (currentRoute === url.replace('#', '')) || url.startsWith('javascript:void(0)')) {
                 return;
@@ -250,20 +263,22 @@ export class Router {
         }
     }
 
-    async activateRoute(e, oldRoute = null) {
+    private async activateRoute(e: Event | null, oldRoute: string | null = null): Promise<void> {
         if (oldRoute) {
-            const currentRoute = this.routes[oldRoute];
+            const currentRoute: RouteType = this.routes[oldRoute];
             this.historyBackLink = oldRoute
             if (currentRoute) {
                 if (currentRoute.styles && currentRoute.styles.length > 0) {
                     currentRoute.styles.forEach(style => {
-                        document.querySelector(`link[href='/css/${style}']`).remove();
+                        const styleElements = document.querySelector(`link[href='/css/${style}']`)
+                        styleElements ? styleElements.remove() : null;
 
                     });
                 }
                 if (currentRoute.scripts && currentRoute.scripts.length > 0) {
                     currentRoute.scripts.forEach(script => {
-                        document.querySelector(`script[src='/js/${script}']`).remove();
+                        const scriptElements = document.querySelector(`script[src='/js/${script}']`);
+                        scriptElements ? scriptElements.remove() : null;
 
                     });
                 }
@@ -274,14 +289,14 @@ export class Router {
         }
 
 
-        const urlRoute = window.location.pathname;
-        const newRoute = this.routes[urlRoute];
+        const urlRoute: string = window.location.pathname;
+        const newRoute: RouteType | undefined = this.routes[urlRoute];
 
         if (newRoute) {
-            let contentBlock = this.contentPageElement
+            let contentBlock: HTMLElement | null = this.contentPageElement
 
             if (newRoute.includes && newRoute.includes.length > 0) {
-                const includesDiv = document.createElement('div')
+                const includesDiv: HTMLElement = document.createElement('div')
                 includesDiv.id = 'includes'
                 document.body.append(includesDiv)
                 newRoute.includes.forEach(include => {
@@ -289,7 +304,7 @@ export class Router {
                 })
             }
 
-            if (newRoute.filePathTemplate) {
+            if (newRoute.filePathTemplate && contentBlock) {
                 if (newRoute.useLayout) {
                     contentBlock.innerHTML = await fetch(newRoute.useLayout).then(res => res.text());
                     contentBlock = document.getElementById('content-layout')
@@ -299,19 +314,24 @@ export class Router {
                     if (!this.userName) {
                         let userInfo = AuthUtils.getAuthInfo(AuthUtils.userInfoTokenKey);
                         if (userInfo) {
-                            userInfo = JSON.parse(userInfo);
-                            if (userInfo.name) {
-                                this.userName = `${userInfo.name} ${userInfo.lastName}`;
+                            const parsedUserInfo: UserInfoType = JSON.parse(userInfo as string);
+                            if (parsedUserInfo.name) {
+                                this.userName = `${parsedUserInfo.name} ${parsedUserInfo.lastName}`;
                             }
                         }
                     }
-                    this.profileNameElement.innerText = this.userName;
+                    if (this.profileNameElement) {
+                        this.profileNameElement.innerText = this.userName as string;
+                    }
 
                     const balance = await BalanceService.getBalance()
-                    document.getElementById('balance').innerText = `${parseInt(balance).toLocaleString()} $`
+                    const balanceElement: HTMLElement | null = document.getElementById('balance');
+                    if (balance && balanceElement) {
+                        balanceElement.innerText = `${parseInt(balance).toLocaleString()} $`
+                    }
 
                 }
-                contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(res => res.text());
+                contentBlock ? contentBlock.innerHTML = await fetch(newRoute.filePathTemplate).then(res => res.text()) : null;
                 document.body.removeAttribute('style');
             }
 
@@ -321,7 +341,7 @@ export class Router {
                 }
             }
 
-            if (newRoute.title) {
+            if (newRoute.title && this.titlePageElement) {
                 this.titlePageElement.innerText = newRoute.title + ' | Lumincoin finance';
             }
 
@@ -332,13 +352,13 @@ export class Router {
         } else {
             console.log('Route not found')
             history.pushState(null, '', '/404');
-            await this.activateRoute();
+            await this.activateRoute(null);
         }
     }
 
-    loadPageScript(src) {
+    private loadPageScript(src: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
+            const script: HTMLScriptElement = document.createElement('script');
             script.src = src;
             script.onload = () => resolve('Script loaded: ' + src);
             script.onerror = () => reject(new Error('Script not loaded: ' + src));
@@ -346,37 +366,39 @@ export class Router {
         })
     }
 
-    async loadIncludes(src, includesDiv) {
-        const srcHtml = await fetch(src).then(response => response.text());
-        const srcNewDiv = document.createElement('div');
+    async loadIncludes(src: string, includesDiv: HTMLElement) {
+        const srcHtml: string = await fetch(src).then(response => response.text());
+        const srcNewDiv: HTMLElement = document.createElement('div');
         srcNewDiv.innerHTML = srcHtml;
         includesDiv.appendChild(srcNewDiv)
     }
 
-    activateMenuItem(route) {
-        const menuItem = document.querySelectorAll('.sidebar .nav-link');
-        menuItem.forEach(item => {
+    private activateMenuItem(route: string) {
+        const menuItem: NodeListOf<Element> = document.querySelectorAll('.sidebar .nav-link');
+        menuItem.forEach((item: Element) => {
             const href = item.getAttribute('href');
-            const cleanedHref = href ? href.replace(/\?.+/gm, '') : href;
-            if (route.includes(cleanedHref) && '/' !== cleanedHref || (route === '/' && cleanedHref === '/')) {
+            const cleanedHref: string | null = href ? href.replace(/\?.+/gm, '') : href;
+            if (cleanedHref && route.includes(cleanedHref) && '/' !== cleanedHref || (route === '/' && cleanedHref === '/')) {
                 item.classList.add('active');
             } else item.classList.remove('active')
 
         })
 
-        const categoryButton = document.getElementById('categories');
-        const categoryListElement = document.getElementById('category-collapse');
-        if (route.includes('categories')) {
-            categoryButton.classList.add('active');
-            categoryButton.classList.remove('collapsed');
-            categoryButton.parentElement.classList.add('active');
-            categoryButton.setAttribute('aria-expanded', 'true');
-            categoryListElement.classList.add('show');
-        } else {
-            categoryButton.classList.add('collapsed');
-            categoryButton.parentElement.classList.remove('active');
-            categoryButton.setAttribute('aria-expanded', 'false');
-            categoryListElement.classList.remove('show');
+        const categoryButton: HTMLElement | null = document.getElementById('categories');
+        const categoryListElement: HTMLElement | null = document.getElementById('category-collapse');
+        if (categoryButton) {
+            if (route.includes('categories')) {
+                categoryButton.classList.add('active');
+                categoryButton.classList.remove('collapsed');
+                (categoryButton.parentElement as HTMLElement).classList.add('active');
+                categoryButton.setAttribute('aria-expanded', 'true');
+                categoryListElement ? categoryListElement.classList.add('show') : null;
+            } else {
+                categoryButton.classList.add('collapsed');
+                (categoryButton.parentElement as HTMLElement).classList.remove('active');
+                categoryButton.setAttribute('aria-expanded', 'false');
+                categoryListElement ? categoryListElement.classList.remove('show') : null;
+            }
         }
     }
 }
